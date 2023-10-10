@@ -6,8 +6,12 @@ import (
 )
 
 type DBConfig struct {
-	DBDialect string `json:"db_dialect"`
-	DBPath    string `json:"db_path"`
+	DBDialect    string `json:"db_dialect"`
+	DBPath       string `json:"db_path"`
+	Password     string `json:"password"`
+	Username     string `json:"username"`
+	MaxIdleConns int    `json:"max_idle_conns"`
+	MaxOpenConns int    `json:"max_open_conns"`
 }
 
 type LogConfig struct {

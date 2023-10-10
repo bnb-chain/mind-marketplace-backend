@@ -2,8 +2,6 @@ package database
 
 import (
 	"fmt"
-	"os"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -22,11 +20,19 @@ func ConnectDBWithConfig(config *util.DBConfig) (*gorm.DB, error) {
 		db, err := gorm.Open(sqlite.Open(config.DBPath), &gorm.Config{})
 		return db.Debug(), err
 	} else if config.DBDialect == "mysql" {
-		userPass := os.Getenv("MYSQL_USER_PASS") //username and password, e.g., root:123456
-		db, err := gorm.Open(mysql.Open(userPass+config.DBPath), &gorm.Config{})
+		dbPath := fmt.Sprintf("%s:%s@%s", config.Username, config.Password, config.DBPath)
+		db, err := gorm.Open(mysql.Open(dbPath), &gorm.Config{})
 		if err != nil {
 			panic(err)
 		}
+
+		dbConfig, err := db.DB()
+		if err != nil {
+			panic(err)
+		}
+		dbConfig.SetMaxIdleConns(config.MaxIdleConns)
+		dbConfig.SetMaxOpenConns(config.MaxOpenConns)
+
 		if err = db.AutoMigrate(&Account{}); err != nil {
 			panic(err)
 		}
