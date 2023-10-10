@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
+	"github.com/bnb-chain/greenfield-data-marketplace-backend/metric"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/monitor"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
 	"github.com/spf13/pflag"
@@ -48,19 +49,23 @@ func main() {
 		return
 	}
 
+	metricServer := metric.NewMetricService(config)
+
 	itemDao := dao.NewDbItemDao(db)
 
 	gnfdBlockDao := dao.NewDbGnfdBlockDao(db)
 	gnfdClient := monitor.NewGnfdCompositClients(config.GnfdRpcAddrs, config.GnfdChainId, false)
-	gnfdProcessor := monitor.NewGnfdBlockProcessor(gnfdClient, gnfdBlockDao, itemDao, db)
+	gnfdProcessor := monitor.NewGnfdBlockProcessor(gnfdClient, gnfdBlockDao, itemDao, db, metricServer)
 	gnfdMonitor := monitor.NewMonitor(gnfdProcessor, config.GnfdStartHeight)
-	go gnfdMonitor.Start()
 
 	bscBlockDao := dao.NewDbBscBlockDao(db)
 	bscClient := monitor.NewBscCompositeClients(config.BscRpcAddrs, config.BscBlocksForFinality)
-	bscProcessor := monitor.NewBscBlockProcessor(bscClient, config.BscMarketplaceContract, bscBlockDao, itemDao, db)
+	bscProcessor := monitor.NewBscBlockProcessor(bscClient, config.BscMarketplaceContract, bscBlockDao, itemDao, db, metricServer)
 	bscMonitor := monitor.NewMonitor(bscProcessor, config.BscStartHeight)
-	bscMonitor.Start()
+
+	go gnfdMonitor.Start()
+	go bscMonitor.Start()
+	metricServer.Start()
 
 	select {}
 }

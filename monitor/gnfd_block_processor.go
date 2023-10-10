@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
+	"github.com/bnb-chain/greenfield-data-marketplace-backend/metric"
 	"github.com/bnb-chain/greenfield/types/resource"
 	"github.com/bnb-chain/greenfield/x/permission/types"
 	abciTypes "github.com/cometbft/cometbft/abci/types"
@@ -16,35 +17,39 @@ import (
 )
 
 type GnfdBlockProcessor struct {
-	client   *GnfdCompositeClients
-	blockDao dao.GnfdBlockDao
-	itemDao  dao.ItemDao
-	db       *gorm.DB
+	client       *GnfdCompositeClients
+	blockDao     dao.GnfdBlockDao
+	itemDao      dao.ItemDao
+	db           *gorm.DB
+	metricServer *metric.MetricService
 }
 
-func NewGnfdBlockProcessor(client *GnfdCompositeClients, blockDao dao.GnfdBlockDao, itemDao dao.ItemDao, db *gorm.DB) *GnfdBlockProcessor {
+func NewGnfdBlockProcessor(client *GnfdCompositeClients,
+	blockDao dao.GnfdBlockDao, itemDao dao.ItemDao, db *gorm.DB,
+	metricServer *metric.MetricService) *GnfdBlockProcessor {
 	return &GnfdBlockProcessor{
-		client:   client,
-		blockDao: blockDao,
-		itemDao:  itemDao,
-		db:       db,
+		client:       client,
+		blockDao:     blockDao,
+		itemDao:      itemDao,
+		db:           db,
+		metricServer: metricServer,
 	}
 }
 
-func (g *GnfdBlockProcessor) GetDatabaseBlockHeight() (uint64, error) {
-	block, err := g.blockDao.Max(context.Background())
+func (p *GnfdBlockProcessor) GetDatabaseBlockHeight() (uint64, error) {
+	block, err := p.blockDao.Max(context.Background())
 	if err != nil {
 		return 0, err
 	}
 	return block.Height, nil
 }
 
-func (g *GnfdBlockProcessor) GetBlockchainBlockHeight() (uint64, error) {
-	return g.client.GetLatestBlockHeight()
+func (p *GnfdBlockProcessor) GetBlockchainBlockHeight() (uint64, error) {
+	return p.client.GetLatestBlockHeight()
 }
 
-func (g *GnfdBlockProcessor) Process(blockHeight uint64) error {
-	results, err := g.client.GetBlockResults(int64(blockHeight))
+func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
+	results, err := p.client.GetBlockResults(int64(blockHeight))
 	if err != nil {
 		return err
 	}
@@ -58,7 +63,7 @@ func (g *GnfdBlockProcessor) Process(blockHeight uint64) error {
 			rawSql := ""
 			switch event.Type {
 			case "greenfield.storage.EventCreateGroup":
-				rawSql, err = g.handleEventCreateGroup(blockHeight, event)
+				rawSql, err = p.handleEventCreateGroup(blockHeight, event)
 				if err != nil {
 					return err
 				}
@@ -66,7 +71,7 @@ func (g *GnfdBlockProcessor) Process(blockHeight uint64) error {
 					rawCreateSqls = append(rawCreateSqls, rawSql)
 				}
 			case "greenfield.storage.EventDeleteGroup":
-				rawSql, err = g.handleEventDeleteGroup(blockHeight, event)
+				rawSql, err = p.handleEventDeleteGroup(blockHeight, event)
 				if err != nil {
 					return err
 				}
@@ -74,7 +79,7 @@ func (g *GnfdBlockProcessor) Process(blockHeight uint64) error {
 					rawDeleteSqls = append(rawDeleteSqls, rawSql)
 				}
 			case "greenfield.storage.EventUpdateGroupExtra":
-				rawSql, err = g.handleEventUpdateGroupExtra(blockHeight, event)
+				rawSql, err = p.handleEventUpdateGroupExtra(blockHeight, event)
 				if err != nil {
 					return err
 				}
@@ -82,7 +87,7 @@ func (g *GnfdBlockProcessor) Process(blockHeight uint64) error {
 					rawUpdateSqls = append(rawUpdateSqls, rawSql)
 				}
 			case "greenfield.permission.EventPutPolicy":
-				rawSql, err = g.handleEventPutPolicy(blockHeight, event)
+				rawSql, err = p.handleEventPutPolicy(blockHeight, event)
 				if err != nil {
 					return err
 				}
@@ -95,7 +100,7 @@ func (g *GnfdBlockProcessor) Process(blockHeight uint64) error {
 
 	rawDeleteSqls = append(rawDeleteSqls, fmt.Sprintf("insert into gnfd_blocks (height) values (%d)", blockHeight))
 
-	return g.db.Transaction(func(tx *gorm.DB) error {
+	err = p.db.Transaction(func(tx *gorm.DB) error {
 		for _, rawSql := range rawCreateSqls {
 			if err = tx.Exec(rawSql).Error; err != nil {
 				return err
@@ -113,9 +118,15 @@ func (g *GnfdBlockProcessor) Process(blockHeight uint64) error {
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+
+	p.metricServer.SetGnfdSavedBlockHeight(blockHeight)
+	return nil
 }
 
-func (g *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
+func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
 	createGroup, err := parseEventCreateGroup(event)
 	if err != nil {
@@ -154,7 +165,7 @@ func (g *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		return rawSql, err
 	}
 
-	_, err = g.itemDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()))
+	_, err = p.itemDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()))
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return rawSql, err
 	}
@@ -169,7 +180,7 @@ func (g *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		database.ItemPending, extra.Desc, extra.Url, extra.Price, blockHeight), nil
 }
 
-func (g *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
+func (p *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
 	deleteGroup, err := parseEventDeleteGroup(event)
 	if err != nil {
@@ -180,7 +191,7 @@ func (g *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event ab
 		database.ItemDelisted, blockHeight, deleteGroup.GroupId.Uint64()), nil
 }
 
-func (g *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, event abciTypes.Event) (string, error) {
+func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
 	updateGroupExtra, err := parseEventUpdateGroupExtra(event)
 	if err != nil {
@@ -196,7 +207,7 @@ func (g *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 		extra.Desc, extra.Url, extra.Price, blockHeight, updateGroupExtra.GroupId.Uint64()), nil
 }
 
-func (g *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abciTypes.Event) (string, error) {
+func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
 	putPolicy, err := parseEventPutPolicy(event)
 	if err != nil {

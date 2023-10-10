@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
+	"github.com/bnb-chain/greenfield-data-marketplace-backend/metric"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/monitor/contracts"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -22,9 +23,12 @@ type BscBlockProcessor struct {
 	blockDao            dao.BscBlockDao
 	itemDao             dao.ItemDao
 	db                  *gorm.DB
+	metricServer        *metric.MetricService
 }
 
-func NewBscBlockProcessor(client *BscCompositeClients, marketplaceContract string, blockDao dao.BscBlockDao, itemDao dao.ItemDao, db *gorm.DB) *BscBlockProcessor {
+func NewBscBlockProcessor(client *BscCompositeClients, marketplaceContract string,
+	blockDao dao.BscBlockDao, itemDao dao.ItemDao, db *gorm.DB,
+	metricServer *metric.MetricService) *BscBlockProcessor {
 	marketplaceAbi, err := abi.JSON(strings.NewReader(contracts.MarketplaceMetaData.ABI))
 	if err != nil {
 		panic("marshal abi error")
@@ -37,6 +41,7 @@ func NewBscBlockProcessor(client *BscCompositeClients, marketplaceContract strin
 		blockDao:            blockDao,
 		itemDao:             itemDao,
 		db:                  db,
+		metricServer:        metricServer,
 	}
 }
 
@@ -81,7 +86,7 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 
 	rawSqls = append(rawSqls, fmt.Sprintf("insert into bsc_blocks (height) values (%d)", blockHeight))
 
-	return p.db.Transaction(func(tx *gorm.DB) error {
+	err = p.db.Transaction(func(tx *gorm.DB) error {
 		for _, rawSql := range rawSqls {
 			if err = tx.Exec(rawSql).Error; err != nil {
 				return err
@@ -89,6 +94,12 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+
+	p.metricServer.SetBscSavedBlockHeight(blockHeight)
+	return nil
 }
 
 func (p *BscBlockProcessor) handleEventBuy(blockHeight uint64, l types.Log) ([]string, error) {
@@ -149,5 +160,3 @@ func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) (
 
 	return rawSql, nil
 }
-
-//TODO: add UpdatePrice event in contract
