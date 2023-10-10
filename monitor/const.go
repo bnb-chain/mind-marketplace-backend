@@ -1,0 +1,20 @@
+package monitor
+
+import (
+	"github.com/avast/retry-go/v4"
+	"time"
+)
+
+const (
+	RPCTimeout                   = 3 * time.Second
+	SleepSecondForUpdateClient   = 10 * time.Second
+	DataSeedDenyServiceThreshold = 60
+	FallBehindThreshold          = 5
+)
+
+var (
+	RtyAttNum = uint(5)
+	RtyAttem  = retry.Attempts(RtyAttNum)
+	RtyDelay  = retry.Delay(time.Millisecond * 500)
+	RtyErr    = retry.LastErrorOnly(true)
+)
