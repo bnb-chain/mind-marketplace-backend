@@ -1,7 +1,7 @@
-FROM balenalib/amd64-debian-golang:latest as builder
+FROM golang:1.20-alpine as builder
 
 # Set up apk dependencies
-ENV PACKAGES libc6-dev make git  bash build-essential curl
+ENV PACKAGES make git libc-dev bash gcc linux-headers eudev-dev curl ca-certificates build-base
 
 # Set working directory for the build
 WORKDIR /opt/app
@@ -10,7 +10,7 @@ WORKDIR /opt/app
 COPY . .
 
 # Install minimum necessary dependencies, remove packages
-RUN apt-get -y update && apt-get -y install $PACKAGES
+RUN apk add --no-cache $PACKAGES
 
 # For Private REPO
 ARG GH_TOKEN=""
@@ -22,6 +22,24 @@ RUN make build_server
 
 FROM alpine:3.17
 
+ARG USER=app
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+ENV PACKAGES ca-certificates libstdc++
+ENV WORKDIR=/app
+
+RUN apk add --no-cache $PACKAGES \
+  && rm -rf /var/cache/apk/* \
+  && addgroup -g ${USER_GID} ${USER} \
+  && adduser -u ${USER_UID} -G ${USER} --shell /sbin/nologin --no-create-home -D ${USER} \
+  && addgroup ${USER} tty \
+  && sed -i -e "s/bin\/sh/bin\/bash/" /etc/passwd
+
+WORKDIR ${WORKDIR}
+RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
+USER ${USER_UID}:${USER_GID}
+
 ENV CONFIG_FILE_PATH /opt/app/config/config.json
 
 ENV WORKDIR=/app
@@ -29,4 +47,4 @@ WORKDIR ${WORKDIR}
 COPY --from=builder /opt/app/build/server ${WORKDIR}
 
 # Run the app
-ENTRYPOINT /app/server --port, 8080 --config-path "$CONFIG_FILE_PATH"
+CMD /app/server --port 8080 --config-path "$CONFIG_FILE_PATH"
