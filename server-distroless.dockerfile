@@ -47,4 +47,4 @@ WORKDIR ${WORKDIR}
 COPY --from=builder /opt/app/build/server ${WORKDIR}
 
 # Run the app
-CMD /app/server --port 8080 --config-path "$CONFIG_FILE_PATH"
+CMD /app/server --host 0.0.0.0 --port 8080 --config-path "$CONFIG_FILE_PATH"
