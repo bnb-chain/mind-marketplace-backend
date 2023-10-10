@@ -44,6 +44,7 @@ func (m *Monitor) run() error {
 			return err
 		}
 		dbHeight++
+		time.Sleep(20 * time.Millisecond)
 	}
 
 	return nil
