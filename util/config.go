@@ -51,9 +51,11 @@ type MonitorConfig struct {
 	BscRpcAddrs            []string `json:"bsc_rpc_addrs"`
 	BscBlocksForFinality   int      `json:"bsc_blocks_for_finality"`
 	BscMarketplaceContract string   `json:"bsc_marketplace_contract"`
+	BscStartHeight         uint64   `json:"bsc_start_height"`
 
-	GnfdRpcAddrs []string `json:"gnfd_rpc_addrs"`
-	GnfdChainId  string   `json:"gnfd_chain_id"`
+	GnfdRpcAddrs    []string `json:"gnfd_rpc_addrs"`
+	GnfdChainId     string   `json:"gnfd_chain_id"`
+	GnfdStartHeight uint64   `json:"gnfd_start_height"`
 
 	DBConfig  *DBConfig  `json:"db_config"`
 	LogConfig *LogConfig `json:"log_config"`

@@ -53,13 +53,13 @@ func main() {
 	gnfdBlockDao := dao.NewDbGnfdBlockDao(db)
 	gnfdClient := monitor.NewGnfdCompositClients(config.GnfdRpcAddrs, config.GnfdChainId, false)
 	gnfdProcessor := monitor.NewGnfdBlockProcessor(gnfdClient, gnfdBlockDao, itemDao, db)
-	gnfdMonitor := monitor.NewMonitor(gnfdProcessor)
+	gnfdMonitor := monitor.NewMonitor(gnfdProcessor, config.GnfdStartHeight)
 	go gnfdMonitor.Start()
 
 	bscBlockDao := dao.NewDbBscBlockDao(db)
 	bscClient := monitor.NewBscCompositeClients(config.BscRpcAddrs, config.BscBlocksForFinality)
 	bscProcessor := monitor.NewBscBlockProcessor(bscClient, config.BscMarketplaceContract, bscBlockDao, itemDao, db)
-	bscMonitor := monitor.NewMonitor(bscProcessor)
+	bscMonitor := monitor.NewMonitor(bscProcessor, config.BscStartHeight)
 	bscMonitor.Start()
 
 	select {}

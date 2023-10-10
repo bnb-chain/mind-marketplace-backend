@@ -7,11 +7,12 @@ import (
 )
 
 type Monitor struct {
-	processor BlockProcessor
+	processor   BlockProcessor
+	startHeight uint64
 }
 
-func NewMonitor(p BlockProcessor) *Monitor {
-	return &Monitor{processor: p}
+func NewMonitor(p BlockProcessor, startHeight uint64) *Monitor {
+	return &Monitor{processor: p, startHeight: startHeight}
 }
 
 func (m *Monitor) Start() {
@@ -32,6 +33,9 @@ func (m *Monitor) run() error {
 	dbHeight, err := m.processor.GetDatabaseBlockHeight()
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return err
+	}
+	if dbHeight < m.startHeight {
+		dbHeight = m.startHeight
 	}
 
 	for dbHeight < blockchainHeight {
