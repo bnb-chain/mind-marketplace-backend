@@ -22,12 +22,11 @@ RUN make build_monitor
 
 FROM gcr.io/distroless/cc-debian11:latest
 
-ENV DATA_MARKETPLACE_HOME /opt/app
-ENV CONFIG_FILE_PATH $DATA_MARKETPLACE_HOME/config/config.json
+ENV CONFIG_FILE_PATH /opt/app/config/config.json
 
 ENV WORKDIR=/app
 WORKDIR ${WORKDIR}
 COPY --from=builder /opt/app/build/monitor ${WORKDIR}
 
 # Run the app
-ENTRYPOINT ["/app/monitor", "--config-path",  "$CONFIG_FILE_PATH"]
+ENTRYPOINT /app/monitor --config-path "$CONFIG_FILE_PATH"

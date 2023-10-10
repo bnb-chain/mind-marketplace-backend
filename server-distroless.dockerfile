@@ -22,12 +22,11 @@ RUN make build_server
 
 FROM gcr.io/distroless/cc-debian11:latest
 
-ENV DATA_MARKETPLACE_HOME /opt/app
-ENV CONFIG_FILE_PATH $DATA_MARKETPLACE_HOME/config/config.json
+ENV CONFIG_FILE_PATH /opt/app/config/config.json
 
 ENV WORKDIR=/app
 WORKDIR ${WORKDIR}
 COPY --from=builder /opt/app/build/server ${WORKDIR}
 
 # Run the app
-ENTRYPOINT ["/app/server", "--config-path",  "$CONFIG_FILE_PATH", "--port", "8080"]
+ENTRYPOINT /app/server --port, 8080 --config-path "$CONFIG_FILE_PATH"
