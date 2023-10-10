@@ -20,7 +20,7 @@ RUN git config --global url."https://${GH_TOKEN}@github.com".insteadOf "https://
 RUN make build_server
 
 
-FROM gcr.io/distroless/cc-debian11:latest
+FROM alpine:3.17
 
 ENV CONFIG_FILE_PATH /opt/app/config/config.json
 
