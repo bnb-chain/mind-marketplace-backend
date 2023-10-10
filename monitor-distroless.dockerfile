@@ -30,4 +30,4 @@ WORKDIR ${WORKDIR}
 COPY --from=builder /opt/app/build/monitor ${WORKDIR}
 
 # Run the app
-ENTRYPOINT ["/app/server", "--config-path",  "$CONFIG_FILE_PATH"]
+ENTRYPOINT ["/app/monitor", "--config-path",  "$CONFIG_FILE_PATH"]
