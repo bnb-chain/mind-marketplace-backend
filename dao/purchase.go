@@ -70,7 +70,7 @@ func (dao *dbPurchaseDao) Search(context context.Context, itemId int64, address 
 		parameters = append(parameters, address)
 	}
 
-	countSql := "select count(1) from items " + rawSql
+	countSql := "select count(1) from purchases " + rawSql
 
 	err = dao.db.Raw(countSql, parameters...).Scan(&total).Error
 	if err != nil {
