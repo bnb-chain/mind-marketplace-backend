@@ -63,8 +63,25 @@ func SetupHandler(handler http.Handler, app string, config *util.ServerConfig) h
 
 	h := handleMetrics(panicHandler, app)
 
-	handleCORS := cors.AllowAll().Handler
+	handleCORS := allowAll().Handler
 	return handleCORS(h)
+}
+
+func allowAll() *cors.Cors {
+	return cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodHead,
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: false,
+	})
 }
 
 func Error(err error) (int64, string) {
