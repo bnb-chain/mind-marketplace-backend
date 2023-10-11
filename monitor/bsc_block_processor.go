@@ -45,6 +45,10 @@ func NewBscBlockProcessor(client *BscCompositeClients, marketplaceContract strin
 	}
 }
 
+func (p *BscBlockProcessor) Name() string {
+	return "bsc"
+}
+
 func (p *BscBlockProcessor) GetDatabaseBlockHeight() (uint64, error) {
 	block, err := p.blockDao.Max(context.Background())
 	if err != nil {

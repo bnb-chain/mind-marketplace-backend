@@ -20,17 +20,20 @@ func (m *Monitor) Start() {
 	for range ticker.C {
 		err := m.run()
 		if err != nil {
-			util.Logger.Errorf("fail to run with error: %s", err)
+			util.Logger.Errorf("processor: %s, fail to run with error: %s", m.processor.Name(), err)
 		}
 	}
 }
 
 func (m *Monitor) run() error {
 	blockchainHeight, err := m.processor.GetBlockchainBlockHeight()
+	util.Logger.Infof("processor: %s, current blockchain height: %d", m.processor.Name(), blockchainHeight)
 	if err != nil {
 		return err
 	}
+
 	dbHeight, err := m.processor.GetDatabaseBlockHeight()
+	util.Logger.Infof("processor: %s, current database height: %d", m.processor.Name(), blockchainHeight)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return err
 	}
@@ -39,6 +42,7 @@ func (m *Monitor) run() error {
 	}
 
 	for dbHeight < blockchainHeight {
+		util.Logger.Infof("processor: %s, processing height: %d", m.processor.Name(), blockchainHeight)
 		err = m.processor.Process(dbHeight + 1)
 		if err != nil {
 			return err

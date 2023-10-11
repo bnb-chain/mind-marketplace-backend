@@ -36,6 +36,10 @@ func NewGnfdBlockProcessor(client *GnfdCompositeClients,
 	}
 }
 
+func (p *GnfdBlockProcessor) Name() string {
+	return "gnfd"
+}
+
 func (p *GnfdBlockProcessor) GetDatabaseBlockHeight() (uint64, error) {
 	block, err := p.blockDao.Max(context.Background())
 	if err != nil {
