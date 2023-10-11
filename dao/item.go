@@ -98,8 +98,12 @@ func (dao *dbItemDao) Search(context context.Context, address, keyword string, h
 	}
 
 	if hideBlocked {
-		rawSql = rawSql + ` and status <> ?`
+		rawSql = rawSql + ` and status not in ( ?, ? ) `
+		parameters = append(parameters, database.ItemDelisted)
 		parameters = append(parameters, database.ItemBlocked)
+	} else {
+		rawSql = rawSql + ` and status not in ( ? ) `
+		parameters = append(parameters, database.ItemDelisted)
 	}
 
 	countSql := "select count(1) from items " + rawSql

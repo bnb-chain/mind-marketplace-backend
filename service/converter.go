@@ -26,6 +26,8 @@ func convertItem(item database.Item) *models.Item {
 		ID:          &id,
 		Type:        &typ,
 		Name:        &item.Name,
+		GroupID:     item.GroupId,
+		GroupName:   item.GroupName,
 		CreatedAt:   item.CreatedAt.Unix(),
 		Description: item.Description,
 		URL:         item.Url,
@@ -35,6 +37,14 @@ func convertItem(item database.Item) *models.Item {
 	if item.Stats != nil {
 		result.TotalSale = item.Stats.Sale
 		result.TotalVolume = util.Decimal(item.Stats.Volume)
+	}
+
+	if item.Status == database.ItemListed {
+		result.Status = "LISTED"
+	} else if item.Status == database.ItemBlocked {
+		result.Status = "BLOCKED"
+	} else {
+		result.Status = "PENDING"
 	}
 
 	return &result

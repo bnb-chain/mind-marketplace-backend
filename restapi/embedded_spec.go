@@ -355,6 +355,17 @@ func init() {
           "type": "string",
           "example": "this is a crypto cat"
         },
+        "groupId": {
+          "description": "group id",
+          "type": "integer",
+          "format": "int64",
+          "example": 10
+        },
+        "groupName": {
+          "description": "name of the group",
+          "type": "string",
+          "example": "group_abc"
+        },
         "id": {
           "description": "id",
           "type": "integer",
@@ -367,7 +378,7 @@ func init() {
           "example": "helloworld"
         },
         "ownerAddress": {
-          "description": "address of the ownew",
+          "description": "address of the owner",
           "type": "string",
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
@@ -386,6 +397,15 @@ func init() {
           "type": "integer",
           "format": "int64",
           "example": 10
+        },
+        "status": {
+          "description": "status",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "LISTED",
+            "BLOCKED"
+          ]
         },
         "totalSale": {
           "description": "all time trade times",
@@ -1055,6 +1075,17 @@ func init() {
           "type": "string",
           "example": "this is a crypto cat"
         },
+        "groupId": {
+          "description": "group id",
+          "type": "integer",
+          "format": "int64",
+          "example": 10
+        },
+        "groupName": {
+          "description": "name of the group",
+          "type": "string",
+          "example": "group_abc"
+        },
         "id": {
           "description": "id",
           "type": "integer",
@@ -1067,7 +1098,7 @@ func init() {
           "example": "helloworld"
         },
         "ownerAddress": {
-          "description": "address of the ownew",
+          "description": "address of the owner",
           "type": "string",
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
@@ -1086,6 +1117,15 @@ func init() {
           "type": "integer",
           "format": "int64",
           "example": 10
+        },
+        "status": {
+          "description": "status",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "LISTED",
+            "BLOCKED"
+          ]
         },
         "totalSale": {
           "description": "all time trade times",

@@ -29,6 +29,14 @@ type Item struct {
 	// Example: this is a crypto cat
 	Description string `json:"description,omitempty"`
 
+	// group id
+	// Example: 10
+	GroupID int64 `json:"groupId,omitempty"`
+
+	// name of the group
+	// Example: group_abc
+	GroupName string `json:"groupName,omitempty"`
+
 	// id
 	// Example: 100
 	// Required: true
@@ -39,7 +47,7 @@ type Item struct {
 	// Required: true
 	Name *string `json:"name"`
 
-	// address of the ownew
+	// address of the owner
 	// Example: 0x0BAC492386862aD3dF4B666Bc096b0505BB694Da
 	OwnerAddress string `json:"ownerAddress,omitempty"`
 
@@ -50,6 +58,10 @@ type Item struct {
 	// bucket or object id
 	// Example: 10
 	ResourceID int64 `json:"resourceId,omitempty"`
+
+	// status
+	// Enum: [PENDING LISTED BLOCKED]
+	Status string `json:"status,omitempty"`
 
 	// all time trade times
 	// Example: 10
@@ -82,6 +94,10 @@ func (m *Item) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validatePrice(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateStatus(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -128,6 +144,51 @@ func (m *Item) validatePrice(formats strfmt.Registry) error {
 		} else if ce, ok := err.(*errors.CompositeError); ok {
 			return ce.ValidateName("price")
 		}
+		return err
+	}
+
+	return nil
+}
+
+var itemTypeStatusPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["PENDING","LISTED","BLOCKED"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		itemTypeStatusPropEnum = append(itemTypeStatusPropEnum, v)
+	}
+}
+
+const (
+
+	// ItemStatusPENDING captures enum value "PENDING"
+	ItemStatusPENDING string = "PENDING"
+
+	// ItemStatusLISTED captures enum value "LISTED"
+	ItemStatusLISTED string = "LISTED"
+
+	// ItemStatusBLOCKED captures enum value "BLOCKED"
+	ItemStatusBLOCKED string = "BLOCKED"
+)
+
+// prop value enum
+func (m *Item) validateStatusEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, itemTypeStatusPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Item) validateStatus(formats strfmt.Registry) error {
+	if swag.IsZero(m.Status) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateStatusEnum("status", "body", m.Status); err != nil {
 		return err
 	}
 
