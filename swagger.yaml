@@ -82,6 +82,36 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /item_by_group/{groupId}:
+    get:
+      tags:
+        - "item"
+      summary: "Get item by group"
+      operationId: "getItemByGroup"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "groupId"
+          in: "path"
+          description: "group"
+          required: true
+          type: integer
+          format: int64
+          minLength: 1
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
   /item/search:
     post:
       tags:

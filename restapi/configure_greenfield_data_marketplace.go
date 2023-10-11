@@ -60,6 +60,7 @@ func configureAPI(api *operations.GreenfieldDataMarketplaceAPI) http.Handler {
 	api.AccountGetAccountHandler = account.GetAccountHandlerFunc(handlers.HandleGetAccount())
 
 	api.ItemGetItemHandler = item.GetItemHandlerFunc(handlers.HandleGetItem())
+	api.ItemGetItemByGroupHandler = item.GetItemByGroupHandlerFunc(handlers.HandleGetItemByGroup())
 	api.ItemSearchItemHandler = item.SearchItemHandlerFunc(handlers.HandleSearchItem())
 
 	api.PurchaseGetPurchaseHandler = purchase.GetPurchaseHandlerFunc(handlers.HandleGetPurchase())

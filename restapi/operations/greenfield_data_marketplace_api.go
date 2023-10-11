@@ -52,6 +52,9 @@ func NewGreenfieldDataMarketplaceAPI(spec *loads.Document) *GreenfieldDataMarket
 		ItemGetItemHandler: item.GetItemHandlerFunc(func(params item.GetItemParams) middleware.Responder {
 			return middleware.NotImplemented("operation item.GetItem has not yet been implemented")
 		}),
+		ItemGetItemByGroupHandler: item.GetItemByGroupHandlerFunc(func(params item.GetItemByGroupParams) middleware.Responder {
+			return middleware.NotImplemented("operation item.GetItemByGroup has not yet been implemented")
+		}),
 		PurchaseGetPurchaseHandler: purchase.GetPurchaseHandlerFunc(func(params purchase.GetPurchaseParams) middleware.Responder {
 			return middleware.NotImplemented("operation purchase.GetPurchase has not yet been implemented")
 		}),
@@ -101,6 +104,8 @@ type GreenfieldDataMarketplaceAPI struct {
 	AccountGetAccountHandler account.GetAccountHandler
 	// ItemGetItemHandler sets the operation handler for the get item operation
 	ItemGetItemHandler item.GetItemHandler
+	// ItemGetItemByGroupHandler sets the operation handler for the get item by group operation
+	ItemGetItemByGroupHandler item.GetItemByGroupHandler
 	// PurchaseGetPurchaseHandler sets the operation handler for the get purchase operation
 	PurchaseGetPurchaseHandler purchase.GetPurchaseHandler
 	// ItemSearchItemHandler sets the operation handler for the search item operation
@@ -189,6 +194,9 @@ func (o *GreenfieldDataMarketplaceAPI) Validate() error {
 	}
 	if o.ItemGetItemHandler == nil {
 		unregistered = append(unregistered, "item.GetItemHandler")
+	}
+	if o.ItemGetItemByGroupHandler == nil {
+		unregistered = append(unregistered, "item.GetItemByGroupHandler")
 	}
 	if o.PurchaseGetPurchaseHandler == nil {
 		unregistered = append(unregistered, "purchase.GetPurchaseHandler")
@@ -295,6 +303,10 @@ func (o *GreenfieldDataMarketplaceAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/item/{itemId}"] = item.NewGetItem(o.context, o.ItemGetItemHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/item_by_group/{groupId}"] = item.NewGetItemByGroup(o.context, o.ItemGetItemByGroupHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

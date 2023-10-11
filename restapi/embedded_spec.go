@@ -160,6 +160,49 @@ func init() {
         }
       }
     },
+    "/item_by_group/{groupId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get item by group",
+        "operationId": "getItemByGroup",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "integer",
+            "format": "int64",
+            "description": "group",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/purchase/search": {
       "post": {
         "consumes": [
@@ -845,6 +888,49 @@ func init() {
             "format": "int64",
             "description": "id of item",
             "name": "itemId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/item_by_group/{groupId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get item by group",
+        "operationId": "getItemByGroup",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "integer",
+            "format": "int64",
+            "description": "group",
+            "name": "groupId",
             "in": "path",
             "required": true
           }

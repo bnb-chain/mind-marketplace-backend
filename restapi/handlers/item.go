@@ -25,6 +25,23 @@ func HandleGetItem() func(params item.GetItemParams) middleware.Responder {
 	}
 }
 
+func HandleGetItemByGroup() func(params item.GetItemByGroupParams) middleware.Responder {
+	return func(params item.GetItemByGroupParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		response, err := service.ItemSvc.GetByGroup(context, params.GroupID)
+		code, message := Error(err)
+		payload := models.ItemResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.ItemResponseData{
+				Item: response,
+			}
+		}
+		return item.NewGetItemOK().WithPayload(&payload)
+	}
+}
+
 func HandleSearchItem() func(request item.SearchItemParams) middleware.Responder {
 	return func(params item.SearchItemParams) middleware.Responder {
 		context := params.HTTPRequest.Context()

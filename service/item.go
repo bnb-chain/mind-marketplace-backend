@@ -10,6 +10,7 @@ import (
 
 type Item interface {
 	Get(context context.Context, id int64) (*models.Item, error)
+	GetByGroup(context context.Context, groupId int64) (*models.Item, error)
 	Search(context context.Context, request *models.SearchItemRequest) (int64, []*models.Item, error)
 }
 
@@ -25,6 +26,19 @@ func NewItemService(itemDao dao.ItemDao) Item {
 
 func (s *ItemService) Get(context context.Context, id int64) (*models.Item, error) {
 	item, err := s.itemDao.Get(context, id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, NotFoundErr
+		} else {
+			return nil, fmt.Errorf("fail to get item")
+		}
+	}
+
+	return convertItem(item), nil
+}
+
+func (s *ItemService) GetByGroup(context context.Context, groupId int64) (*models.Item, error) {
+	item, err := s.itemDao.GetByGroupId(context, groupId)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, NotFoundErr
