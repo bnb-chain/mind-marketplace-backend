@@ -8,6 +8,7 @@ import (
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/metric"
+	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
 	"github.com/bnb-chain/greenfield/types/resource"
 	"github.com/bnb-chain/greenfield/x/permission/types"
 	abciTypes "github.com/cometbft/cometbft/abci/types"
@@ -55,6 +56,7 @@ func (p *GnfdBlockProcessor) GetBlockchainBlockHeight() (uint64, error) {
 func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 	results, err := p.client.GetBlockResults(int64(blockHeight))
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to block results err: %s", p.Name(), err)
 		return err
 	}
 
@@ -69,6 +71,7 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 			case "greenfield.storage.EventCreateGroup":
 				rawSql, err = p.handleEventCreateGroup(blockHeight, event)
 				if err != nil {
+					util.Logger.Errorf("processor: %s, fail to handle EventCreateGroup err: %s", p.Name(), err)
 					return err
 				}
 				if rawSql != "" {
@@ -77,6 +80,7 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 			case "greenfield.storage.EventDeleteGroup":
 				rawSql, err = p.handleEventDeleteGroup(blockHeight, event)
 				if err != nil {
+					util.Logger.Errorf("processor: %s, fail to handle EventDeleteGroup err: %s", p.Name(), err)
 					return err
 				}
 				if rawSql != "" {
@@ -85,6 +89,7 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 			case "greenfield.storage.EventUpdateGroupExtra":
 				rawSql, err = p.handleEventUpdateGroupExtra(blockHeight, event)
 				if err != nil {
+					util.Logger.Errorf("processor: %s, fail to handle EventUpdateGroupExtra err: %s", p.Name(), err)
 					return err
 				}
 				if rawSql != "" {
@@ -93,6 +98,7 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 			case "greenfield.permission.EventPutPolicy":
 				rawSql, err = p.handleEventPutPolicy(blockHeight, event)
 				if err != nil {
+					util.Logger.Errorf("processor: %s, fail to handle EventPutPolicy err: %s", p.Name(), err)
 					return err
 				}
 				if rawSql != "" {
@@ -123,6 +129,7 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 		return nil
 	})
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to update database err: %s", p.Name(), err)
 		return err
 	}
 
@@ -134,6 +141,7 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 	rawSql := ""
 	createGroup, err := parseEventCreateGroup(event)
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
 		return rawSql, err
 	}
 
@@ -188,6 +196,7 @@ func (p *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event ab
 	rawSql := ""
 	deleteGroup, err := parseEventDeleteGroup(event)
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse EventDeleteGroup err: %s", p.Name(), err)
 		return rawSql, err
 	}
 
@@ -199,7 +208,17 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 	rawSql := ""
 	updateGroupExtra, err := parseEventUpdateGroupExtra(event)
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse EventUpdateGroupExtra err: %s", p.Name(), err)
 		return rawSql, err
+	}
+
+	_, err = p.itemDao.GetByGroupId(context.Background(), int64(updateGroupExtra.GroupId.Uint64()))
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return rawSql, err
+	}
+
+	if err != nil && err == gorm.ErrRecordNotFound { // the group we do not care about
+		return rawSql, nil
 	}
 
 	extra, err := parseExtra(updateGroupExtra.Extra)
@@ -215,6 +234,7 @@ func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abci
 	rawSql := ""
 	putPolicy, err := parseEventPutPolicy(event)
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse EventPutPolicy err: %s", p.Name(), err)
 		return rawSql, err
 	}
 

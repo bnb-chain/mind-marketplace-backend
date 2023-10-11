@@ -33,7 +33,7 @@ func (m *Monitor) run() error {
 	}
 
 	dbHeight, err := m.processor.GetDatabaseBlockHeight()
-	util.Logger.Infof("processor: %s, current database height: %d", m.processor.Name(), blockchainHeight)
+	util.Logger.Infof("processor: %s, current database height: %d", m.processor.Name(), dbHeight)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return err
 	}
@@ -42,13 +42,13 @@ func (m *Monitor) run() error {
 	}
 
 	for dbHeight < blockchainHeight {
-		util.Logger.Infof("processor: %s, processing height: %d", m.processor.Name(), blockchainHeight)
+		util.Logger.Infof("processor: %s, processing height: %d", m.processor.Name(), dbHeight+1)
 		err = m.processor.Process(dbHeight + 1)
 		if err != nil {
 			return err
 		}
 		dbHeight++
-		time.Sleep(20 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 	}
 
 	return nil

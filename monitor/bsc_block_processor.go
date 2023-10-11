@@ -7,6 +7,7 @@ import (
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/metric"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/monitor/contracts"
+	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -65,6 +66,7 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 	topics := []ethcommon.Hash{ethcommon.HexToHash(eventBuyTopic), ethcommon.HexToHash(eventDelistTopic)}
 	logs, err := p.client.QueryChainLogs(blockHeight, blockHeight, topics, p.marketplaceContract)
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to query chain logs err: %s", p.Name(), err)
 		return err
 	}
 	sort.SliceStable(logs, func(i, j int) bool {
@@ -75,12 +77,14 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 	for _, l := range logs {
 		sqls, err := p.handleEventBuy(blockHeight, l)
 		if err != nil {
+			util.Logger.Errorf("processor: %s, fail to handle EventBuy err: %s", p.Name(), err)
 			return err
 		}
 		rawSqls = append(rawSqls, sqls...)
 
 		sql, err := p.handleEventDelist(blockHeight, l)
 		if err != nil {
+			util.Logger.Errorf("processor: %s, fail to handle EventDelist err: %s", p.Name(), err)
 			return err
 		}
 		if sql != "" {
@@ -99,6 +103,7 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 		return nil
 	})
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to update database err: %s", p.Name(), err)
 		return err
 	}
 
@@ -109,6 +114,7 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 func (p *BscBlockProcessor) handleEventBuy(blockHeight uint64, l types.Log) ([]string, error) {
 	event, err := parseBuyEvent(p.marketplaceAbi, l)
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse BuyEvent err: %s", p.Name(), err)
 		return nil, err
 	}
 	if event == nil {
@@ -153,6 +159,7 @@ func (p *BscBlockProcessor) handleEventBuy(blockHeight uint64, l types.Log) ([]s
 func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) (string, error) {
 	event, err := parseDelistEvent(p.marketplaceAbi, l)
 	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse BuyEvent err: %s", p.Name(), err)
 		return "", err
 	}
 	if event == nil {
