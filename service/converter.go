@@ -23,15 +23,16 @@ func convertItem(item database.Item) *models.Item {
 	id := item.Id
 	typ := formatItemType(database.ItemType(item.Type))
 	result := models.Item{
-		ID:          &id,
-		Type:        &typ,
-		Name:        &item.Name,
-		GroupID:     item.GroupId,
-		GroupName:   item.GroupName,
-		CreatedAt:   item.CreatedAt.Unix(),
-		Description: item.Description,
-		URL:         item.Url,
-		Price:       util.Decimal(item.Price),
+		ID:           &id,
+		Type:         &typ,
+		Name:         &item.Name,
+		GroupID:      item.GroupId,
+		GroupName:    item.GroupName,
+		CreatedAt:    item.CreatedAt.Unix(),
+		Description:  item.Description,
+		URL:          item.Url,
+		Price:        util.Decimal(item.Price),
+		OwnerAddress: item.OwnerAddress,
 	}
 
 	if item.Stats != nil {

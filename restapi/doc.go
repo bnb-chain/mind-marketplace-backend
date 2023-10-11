@@ -5,7 +5,7 @@
 //  Swagger document for data marketplace apis.
 //  Schemes:
 //    http
-//  Host: 127.0.0.1:8080
+//  Host: gnfd-testnet-marketplace.bnbchain.org
 //  BasePath: /v1
 //  Version: 1.0.0
 //

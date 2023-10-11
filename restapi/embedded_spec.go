@@ -27,7 +27,7 @@ func init() {
     "title": "Data Marketplace",
     "version": "1.0.0"
   },
-  "host": "127.0.0.1:8080",
+  "host": "gnfd-testnet-marketplace.bnbchain.org",
   "basePath": "/v1",
   "paths": {
     "/account/{address}": {
@@ -738,7 +738,7 @@ func init() {
     "title": "Data Marketplace",
     "version": "1.0.0"
   },
-  "host": "127.0.0.1:8080",
+  "host": "gnfd-testnet-marketplace.bnbchain.org",
   "basePath": "/v1",
   "paths": {
     "/account/{address}": {
