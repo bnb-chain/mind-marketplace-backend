@@ -116,7 +116,7 @@ func (dao *dbItemDao) Search(context context.Context, address, keyword string, h
 		return
 	}
 
-	dataSql := "select * from items inner join item_stats on items.id = item_stats.item_id " + rawSql
+	dataSql := "select * from items left join item_stats on items.id = item_stats.item_id " + rawSql
 	dataSql = dataSql + " order by "
 	switch sort {
 	case ItemSortCreationAsc:
