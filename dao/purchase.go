@@ -50,7 +50,7 @@ func (dao *dbPurchaseDao) Update(context context.Context, purchase *database.Pur
 
 func (dao *dbPurchaseDao) Get(context context.Context, id int64) (database.Purchase, error) {
 	var purchase = database.Purchase{}
-	if err := dao.db.Where("id = ?", id).Take(&purchase).Error; err != nil {
+	if err := dao.db.Preload("Item").Where("id = ?", id).Take(&purchase).Error; err != nil {
 		return purchase, err
 	}
 	return purchase, nil
@@ -96,9 +96,28 @@ func (dao *dbPurchaseDao) Search(context context.Context, itemId int64, address 
 	}
 	dataSql = dataSql + fmt.Sprintf("limit %d, %d", offset, limit)
 
-	err = dao.db.Raw(dataSql, parameters...).Scan(&purchases).Error
+	err = dao.db.Preload("Item").Raw(dataSql, parameters...).Scan(&purchases).Error
 	if err != nil {
 		return 0, nil, err
+	}
+
+	itemIds := []int64{}
+	for _, purchase := range purchases {
+		itemIds = append(itemIds, purchase.ItemId)
+	}
+
+	var items []*database.Item
+	err = dao.db.Preload("Stats").Where("id in ?", itemIds).Find(&items).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	for _, purchase := range purchases {
+		for _, item := range items {
+			if purchase.ItemId == item.Id {
+				purchase.Item = item
+			}
+		}
 	}
 
 	return

@@ -34,10 +34,8 @@ type Purchase struct {
 	// Required: true
 	ID *int64 `json:"id"`
 
-	// item id id
-	// Example: 100
-	// Required: true
-	ItemID *int64 `json:"itemId"`
+	// item
+	Item *Item `json:"item,omitempty"`
 
 	// price
 	// Example: 12.34
@@ -56,7 +54,7 @@ func (m *Purchase) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateItemID(formats); err != nil {
+	if err := m.validateItem(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -88,10 +86,20 @@ func (m *Purchase) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Purchase) validateItemID(formats strfmt.Registry) error {
+func (m *Purchase) validateItem(formats strfmt.Registry) error {
+	if swag.IsZero(m.Item) { // not required
+		return nil
+	}
 
-	if err := validate.Required("itemId", "body", m.ItemID); err != nil {
-		return err
+	if m.Item != nil {
+		if err := m.Item.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("item")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("item")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -114,8 +122,33 @@ func (m *Purchase) validatePrice(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this purchase based on context it is used
+// ContextValidate validate this purchase based on the context it is used
 func (m *Purchase) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateItem(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Purchase) contextValidateItem(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Item != nil {
+		if err := m.Item.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("item")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("item")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

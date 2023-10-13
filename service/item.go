@@ -25,7 +25,7 @@ func NewItemService(itemDao dao.ItemDao) Item {
 }
 
 func (s *ItemService) Get(context context.Context, id int64) (*models.Item, error) {
-	item, err := s.itemDao.Get(context, id)
+	item, err := s.itemDao.Get(context, id, true)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, NotFoundErr
@@ -38,7 +38,7 @@ func (s *ItemService) Get(context context.Context, id int64) (*models.Item, erro
 }
 
 func (s *ItemService) GetByGroup(context context.Context, groupId int64) (*models.Item, error) {
-	item, err := s.itemDao.GetByGroupId(context, groupId)
+	item, err := s.itemDao.GetByGroupId(context, groupId, true)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, NotFoundErr

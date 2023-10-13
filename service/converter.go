@@ -53,14 +53,14 @@ func convertItem(item database.Item) *models.Item {
 
 func convertPurchase(purchase database.Purchase) *models.Purchase {
 	id := purchase.Id
-	itemId := purchase.ItemId
+	item := convertItem(*purchase.Item)
 
 	return &models.Purchase{
 		ID:           &id,
-		ItemID:       &itemId,
 		BuyerAddress: &purchase.BuyerAddress,
 		Price:        util.Decimal(purchase.Price),
 		CreatedAt:    purchase.CreatedAt.Unix(),
+		Item:         item,
 	}
 }
 

@@ -594,7 +594,6 @@ func init() {
       "type": "object",
       "required": [
         "id",
-        "itemId",
         "buyerAddress"
       ],
       "properties": {
@@ -615,11 +614,8 @@ func init() {
           "format": "int64",
           "example": 100
         },
-        "itemId": {
-          "description": "item id id",
-          "type": "integer",
-          "format": "int64",
-          "example": 100
+        "item": {
+          "$ref": "#/definitions/Item"
         },
         "price": {
           "description": "price",
@@ -1404,7 +1400,6 @@ func init() {
       "type": "object",
       "required": [
         "id",
-        "itemId",
         "buyerAddress"
       ],
       "properties": {
@@ -1425,11 +1420,8 @@ func init() {
           "format": "int64",
           "example": 100
         },
-        "itemId": {
-          "description": "item id id",
-          "type": "integer",
-          "format": "int64",
-          "example": 100
+        "item": {
+          "$ref": "#/definitions/Item"
         },
         "price": {
           "description": "price",

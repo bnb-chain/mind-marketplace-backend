@@ -20,8 +20,8 @@ const (
 type ItemDao interface {
 	Create(context context.Context, collection *database.Item) error
 	Update(context context.Context, collection *database.Item) error
-	Get(context context.Context, id int64) (database.Item, error)
-	GetByGroupId(context context.Context, groupId int64) (database.Item, error)
+	Get(context context.Context, id int64, hideBlocked bool) (database.Item, error)
+	GetByGroupId(context context.Context, groupId int64, hideBlocked bool) (database.Item, error)
 	Search(context context.Context, address, keyword string, hideBlocked bool, sort string, offset, limit int) (int64, []*database.Item, error)
 }
 
@@ -67,18 +67,30 @@ func (dao *dbItemDao) Update(context context.Context, collection *database.Item)
 	return nil
 }
 
-func (dao *dbItemDao) Get(context context.Context, id int64) (database.Item, error) {
+func (dao *dbItemDao) Get(context context.Context, id int64, hideBlocked bool) (database.Item, error) {
 	var item = database.Item{}
-	if err := dao.db.Preload("Stats").Where("id = ?", id).Take(&item).Error; err != nil {
-		return item, err
+	if !hideBlocked {
+		if err := dao.db.Preload("Stats").Where("id = ?", id).Take(&item).Error; err != nil {
+			return item, err
+		}
+	} else {
+		if err := dao.db.Preload("Stats").Where("id = ? and status <> ?", id, database.ItemBlocked).Take(&item).Error; err != nil {
+			return item, err
+		}
 	}
 	return item, nil
 }
 
-func (dao *dbItemDao) GetByGroupId(context context.Context, groupId int64) (database.Item, error) {
+func (dao *dbItemDao) GetByGroupId(context context.Context, groupId int64, hideBlocked bool) (database.Item, error) {
 	var item = database.Item{}
-	if err := dao.db.Preload("Stats").Where("group_id = ?", groupId).Take(&item).Error; err != nil {
-		return item, err
+	if !hideBlocked {
+		if err := dao.db.Preload("Stats").Where("group_id = ?", groupId).Take(&item).Error; err != nil {
+			return item, err
+		}
+	} else {
+		if err := dao.db.Preload("Stats").Where("group_id = ? and status <> ?", groupId, database.ItemBlocked).Take(&item).Error; err != nil {
+			return item, err
+		}
 	}
 	return item, nil
 }

@@ -177,7 +177,7 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		return rawSql, err
 	}
 
-	_, err = p.itemDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()))
+	_, err = p.itemDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()), false)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return rawSql, err
 	}
@@ -212,7 +212,7 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 		return rawSql, err
 	}
 
-	_, err = p.itemDao.GetByGroupId(context.Background(), int64(updateGroupExtra.GroupId.Uint64()))
+	_, err = p.itemDao.GetByGroupId(context.Background(), int64(updateGroupExtra.GroupId.Uint64()), false)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return rawSql, err
 	}

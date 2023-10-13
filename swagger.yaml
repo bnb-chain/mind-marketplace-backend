@@ -450,18 +450,12 @@ definitions:
     type: object
     required:
       - id
-      - itemId
       - buyerAddress
     properties:
       id:
         type: integer
         format: int64
         description: "id"
-        example: 100
-      itemId:
-        type: integer
-        format: int64
-        description: "item id id"
         example: 100
       buyerAddress:
         type: string
@@ -479,6 +473,8 @@ definitions:
         format: int64
         description: "created at,unix timestamp"
         example: 1654176354
+      item:
+        $ref: "#/definitions/Item"
 
   PurchaseResponse:
     type: object

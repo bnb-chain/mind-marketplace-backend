@@ -121,7 +121,7 @@ func (p *BscBlockProcessor) handleEventBuy(blockHeight uint64, l types.Log) ([]s
 		return nil, nil
 	}
 
-	item, err := p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64())
+	item, err := p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), false)
 	if err != nil {
 		return nil, err
 	}
