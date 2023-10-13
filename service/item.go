@@ -25,7 +25,7 @@ func NewItemService(itemDao dao.ItemDao) Item {
 }
 
 func (s *ItemService) Get(context context.Context, id int64) (*models.Item, error) {
-	item, err := s.itemDao.Get(context, id, true)
+	item, err := s.itemDao.Get(context, id, false)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, NotFoundErr
@@ -38,7 +38,7 @@ func (s *ItemService) Get(context context.Context, id int64) (*models.Item, erro
 }
 
 func (s *ItemService) GetByGroup(context context.Context, groupId int64) (*models.Item, error) {
-	item, err := s.itemDao.GetByGroupId(context, groupId, true)
+	item, err := s.itemDao.GetByGroupId(context, groupId, false)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, NotFoundErr
@@ -81,7 +81,7 @@ func (s *ItemService) Search(context context.Context, request *models.SearchItem
 		limit = int(request.Limit)
 	}
 
-	total, items, err := s.itemDao.Search(context, address, keyword, true, sort, offset, limit)
+	total, items, err := s.itemDao.Search(context, address, keyword, false, sort, offset, limit)
 	if err != nil {
 		return 0, nil, fmt.Errorf("fail to search item")
 	}

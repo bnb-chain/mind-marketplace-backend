@@ -38,7 +38,7 @@ func (m *Monitor) run() error {
 		return err
 	}
 	if dbHeight < m.startHeight {
-		dbHeight = m.startHeight
+		dbHeight = m.startHeight - 1 // to include start height
 	}
 
 	for dbHeight < blockchainHeight {

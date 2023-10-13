@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
 	ctypes "github.com/cometbft/cometbft/rpc/core/types"
+	bfttypes "github.com/cometbft/cometbft/types"
 	"sync"
 
 	sdkclient "github.com/bnb-chain/greenfield-go-sdk/client"
@@ -49,6 +50,16 @@ func getClientBlockHeight(clientChan chan *GnfdClient, wg *sync.WaitGroup, clien
 	latestHeight := status.SyncInfo.LatestBlockHeight
 	client.Height = latestHeight
 	clientChan <- client
+}
+
+func (c *GnfdCompositeClients) GetBlock(height int64) (*bfttypes.Block, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
+	defer cancel()
+	block, err := c.pickClient().GetBlockByHeight(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+	return block, nil
 }
 
 func (c *GnfdCompositeClients) GetBlockResults(height int64) (*ctypes.ResultBlockResults, error) {

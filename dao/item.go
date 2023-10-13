@@ -20,9 +20,9 @@ const (
 type ItemDao interface {
 	Create(context context.Context, collection *database.Item) error
 	Update(context context.Context, collection *database.Item) error
-	Get(context context.Context, id int64, hideBlocked bool) (database.Item, error)
-	GetByGroupId(context context.Context, groupId int64, hideBlocked bool) (database.Item, error)
-	Search(context context.Context, address, keyword string, hideBlocked bool, sort string, offset, limit int) (int64, []*database.Item, error)
+	Get(context context.Context, id int64, includeAll bool) (database.Item, error)
+	GetByGroupId(context context.Context, groupId int64, includeAll bool) (database.Item, error)
+	Search(context context.Context, address, keyword string, includeAll bool, sort string, offset, limit int) (int64, []*database.Item, error)
 }
 
 type dbItemDao struct {
@@ -67,35 +67,37 @@ func (dao *dbItemDao) Update(context context.Context, collection *database.Item)
 	return nil
 }
 
-func (dao *dbItemDao) Get(context context.Context, id int64, hideBlocked bool) (database.Item, error) {
+func (dao *dbItemDao) Get(context context.Context, id int64, includeAll bool) (database.Item, error) {
 	var item = database.Item{}
-	if !hideBlocked {
+	if includeAll {
 		if err := dao.db.Preload("Stats").Where("id = ?", id).Take(&item).Error; err != nil {
 			return item, err
 		}
 	} else {
-		if err := dao.db.Preload("Stats").Where("id = ? and status <> ?", id, database.ItemBlocked).Take(&item).Error; err != nil {
+		if err := dao.db.Preload("Stats").Where("id = ? and status <> ? and status <> ?",
+			id, database.ItemBlocked, database.ItemDelisted).Take(&item).Error; err != nil {
 			return item, err
 		}
 	}
 	return item, nil
 }
 
-func (dao *dbItemDao) GetByGroupId(context context.Context, groupId int64, hideBlocked bool) (database.Item, error) {
+func (dao *dbItemDao) GetByGroupId(context context.Context, groupId int64, includeAll bool) (database.Item, error) {
 	var item = database.Item{}
-	if !hideBlocked {
+	if includeAll {
 		if err := dao.db.Preload("Stats").Where("group_id = ?", groupId).Take(&item).Error; err != nil {
 			return item, err
 		}
 	} else {
-		if err := dao.db.Preload("Stats").Where("group_id = ? and status <> ?", groupId, database.ItemBlocked).Take(&item).Error; err != nil {
+		if err := dao.db.Preload("Stats").Where("group_id = ? and status <> ? and status <> ?",
+			groupId, database.ItemBlocked, database.ItemDelisted).Take(&item).Error; err != nil {
 			return item, err
 		}
 	}
 	return item, nil
 }
 
-func (dao *dbItemDao) Search(context context.Context, address, keyword string, hideBlocked bool, sort string, offset, limit int) (total int64, items []*database.Item, err error) {
+func (dao *dbItemDao) Search(context context.Context, address, keyword string, includeAll bool, sort string, offset, limit int) (total int64, items []*database.Item, err error) {
 	rawSql := " where 1 = 1 "
 	parameters := make([]interface{}, 0)
 
@@ -109,13 +111,10 @@ func (dao *dbItemDao) Search(context context.Context, address, keyword string, h
 		parameters = append(parameters, "%"+keyword+"%")
 	}
 
-	if hideBlocked {
+	if !includeAll {
 		rawSql = rawSql + ` and status not in ( ?, ? ) `
 		parameters = append(parameters, database.ItemDelisted)
 		parameters = append(parameters, database.ItemBlocked)
-	} else {
-		rawSql = rawSql + ` and status not in ( ? ) `
-		parameters = append(parameters, database.ItemDelisted)
 	}
 
 	countSql := "select count(1) from items " + rawSql

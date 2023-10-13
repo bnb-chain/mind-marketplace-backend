@@ -121,7 +121,7 @@ func (p *BscBlockProcessor) handleEventBuy(blockHeight uint64, l types.Log) ([]s
 		return nil, nil
 	}
 
-	item, err := p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), false)
+	item, err := p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), true)
 	if err != nil {
 		return nil, err
 	}
@@ -139,8 +139,14 @@ func (p *BscBlockProcessor) handleEventBuy(blockHeight uint64, l types.Log) ([]s
 
 	var rawSqls []string
 
-	rawSql1 := fmt.Sprintf("insert into purchases (item_id, buyer_address, price, updated_bsc_height) "+
-		" values (%d, '%s', '%s', %d)", item.Id, event.Buyer.String(), item.Price, blockHeight)
+	blockHeader, err := p.client.GetBlockHeader(blockHeight)
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to get block header err: %s", p.Name(), err)
+		return nil, err
+	}
+
+	rawSql1 := fmt.Sprintf("insert into purchases (item_id, buyer_address, price, purchased_at, updated_bsc_height) "+
+		" values (%d, '%s', '%s', %d,  %d)", item.Id, event.Buyer.String(), item.Price, blockHeader.Time, blockHeight)
 	rawSqls = append(rawSqls, rawSql1)
 
 	if sale == 1 {

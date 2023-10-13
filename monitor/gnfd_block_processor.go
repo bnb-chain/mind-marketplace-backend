@@ -177,7 +177,7 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		return rawSql, err
 	}
 
-	_, err = p.itemDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()), false)
+	_, err = p.itemDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()), true)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return rawSql, err
 	}
@@ -186,10 +186,16 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		return rawSql, nil
 	}
 
-	return fmt.Sprintf("insert into items (group_id, group_name, name, owner_address, status, description, url, price, updated_gnfd_height)"+
-		" values (%d, '%s', '%s', '%s', %d, '%s', '%s', '%s', %d)",
+	block, err := p.client.GetBlock(int64(blockHeight))
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to get block err: %s", p.Name(), err)
+		return rawSql, err
+	}
+
+	return fmt.Sprintf("insert into items (group_id, group_name, name, owner_address, status, description, url, price, listed_at, created_gnfd_height)"+
+		" values (%d, '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d)",
 		createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
-		database.ItemPending, extra.Desc, extra.Url, extra.Price, blockHeight), nil
+		database.ItemPending, extra.Desc, extra.Url, extra.Price, block.Time.Unix(), blockHeight), nil
 }
 
 func (p *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
@@ -212,7 +218,7 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 		return rawSql, err
 	}
 
-	_, err = p.itemDao.GetByGroupId(context.Background(), int64(updateGroupExtra.GroupId.Uint64()), false)
+	_, err = p.itemDao.GetByGroupId(context.Background(), int64(updateGroupExtra.GroupId.Uint64()), true)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return rawSql, err
 	}
