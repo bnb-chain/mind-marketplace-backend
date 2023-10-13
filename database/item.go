@@ -34,7 +34,7 @@ type Item struct {
 	GroupId           int64           `json:"group_id" gorm:"uniqueIndex:idx_item_group_id;not null;"`
 	GroupName         string          `json:"group_name" gorm:"not null;size:256"`
 	Status            ItemStatus      `json:"status" gorm:"index:idx_item_status;not null;size:2"`
-	ListedAt          int64           `json:"listed_at"`
+	ListedAt          int64           `json:"listed_at" gorm:"not null"`
 	CreatedAt         time.Time       `json:"created_at" gorm:"index:idx_item_created_at;NOT NULL;type:TIMESTAMP;default:CURRENT_TIMESTAMP;<-:create"`
 	UpdatedAt         time.Time       `json:"updated_at" gorm:"NOT NULL;type:TIMESTAMP;default:CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP"`
 	CreatedGnfdHeight int64           `json:"created_gnfd_height"`

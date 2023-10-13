@@ -28,7 +28,7 @@ func convertItem(item database.Item) *models.Item {
 		Name:         &item.Name,
 		GroupID:      item.GroupId,
 		GroupName:    item.GroupName,
-		CreatedAt:    item.CreatedAt.Unix(),
+		CreatedAt:    item.ListedAt,
 		Description:  item.Description,
 		URL:          item.Url,
 		Price:        util.Decimal(item.Price),
@@ -59,7 +59,7 @@ func convertPurchase(purchase database.Purchase) *models.Purchase {
 		ID:           &id,
 		BuyerAddress: &purchase.BuyerAddress,
 		Price:        util.Decimal(purchase.Price),
-		CreatedAt:    purchase.CreatedAt.Unix(),
+		CreatedAt:    purchase.PurchasedAt,
 		Item:         item,
 	}
 }

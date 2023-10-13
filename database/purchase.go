@@ -11,7 +11,7 @@ type Purchase struct {
 	ItemId           int64           `json:"item_id" gorm:"index:idx_purchase_item_id"`
 	Item             *Item           `json:"item"`
 	Price            decimal.Decimal `json:"price" gorm:"type:decimal(65,0);"`
-	PurchasedAt      int64           `json:"purchased_at"`
+	PurchasedAt      int64           `json:"purchased_at" gorm:"not null"`
 	CreatedAt        time.Time       `json:"created_at" gorm:"NOT NULL;type:TIMESTAMP;default:CURRENT_TIMESTAMP;<-:create"`
 	UpdatedBscHeight int64           `json:"updated_bsc_height"`
 }
