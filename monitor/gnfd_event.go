@@ -1,23 +1,17 @@
 package monitor
 
 import (
-	"cosmossdk.io/math"
 	"encoding/json"
-	"errors"
-	"fmt"
-	"github.com/bnb-chain/greenfield/types/resource"
-	permTypes "github.com/bnb-chain/greenfield/x/permission/types"
-	storageTypes "github.com/bnb-chain/greenfield/x/storage/types"
-	abciTypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/shopspring/decimal"
-	"strconv"
 )
 
 const groupBucketRegex = "dm_b_.*"
 const groupBucketPrefix = "dm_b_"
 const groupObjectRegex = "dm_o_.*"
-const groupObjectPrefix = "dm_o_" //TODO: how to parse object name
+const groupObjectPrefix = "dm_o_"
 
+/*
+// TODO: to be removed
 func parseEventCreateGroup(event abciTypes.Event) (*storageTypes.EventCreateGroup, error) {
 	result := &storageTypes.EventCreateGroup{}
 	for _, attr := range event.Attributes {
@@ -51,6 +45,7 @@ func parseEventCreateGroup(event abciTypes.Event) (*storageTypes.EventCreateGrou
 	return result, nil
 }
 
+// TODO: to be removed
 func parseEventDeleteGroup(event abciTypes.Event) (*storageTypes.EventDeleteGroup, error) {
 	result := &storageTypes.EventDeleteGroup{}
 	for _, attr := range event.Attributes {
@@ -78,6 +73,7 @@ func parseEventDeleteGroup(event abciTypes.Event) (*storageTypes.EventDeleteGrou
 	return result, nil
 }
 
+// TODO: to be removed
 func parseEventUpdateGroupExtra(event abciTypes.Event) (*storageTypes.EventUpdateGroupExtra, error) {
 	result := &storageTypes.EventUpdateGroupExtra{}
 	for _, attr := range event.Attributes {
@@ -111,6 +107,7 @@ func parseEventUpdateGroupExtra(event abciTypes.Event) (*storageTypes.EventUpdat
 	return result, nil
 }
 
+// TODO: to be removed
 func parseEventPutPolicy(event abciTypes.Event) (*permTypes.EventPutPolicy, error) {
 	result := &permTypes.EventPutPolicy{}
 	for _, attr := range event.Attributes {
@@ -130,7 +127,6 @@ func parseEventPutPolicy(event abciTypes.Event) (*permTypes.EventPutPolicy, erro
 		case "principal":
 			var res Principal
 			err := json.Unmarshal([]byte(attr.Value), &res)
-			fmt.Println(err)
 			if err != nil {
 				return nil, err
 			}
@@ -153,6 +149,7 @@ type Principal struct {
 	Type  string `json:"type"`
 	Value string `json:"value"`
 }
+*/
 
 type Extra struct {
 	Desc  string          `json:"desc"`

@@ -2,19 +2,22 @@ package monitor
 
 import (
 	"context"
-	"cosmossdk.io/math"
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
+
+	"cosmossdk.io/math"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/metric"
 	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
 	"github.com/bnb-chain/greenfield/types/resource"
-	"github.com/bnb-chain/greenfield/x/permission/types"
+	permTypes "github.com/bnb-chain/greenfield/x/permission/types"
+	storageTypes "github.com/bnb-chain/greenfield/x/storage/types"
 	abciTypes "github.com/cometbft/cometbft/abci/types"
+	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"gorm.io/gorm"
-	"regexp"
-	"strings"
 )
 
 type GnfdBlockProcessor struct {
@@ -139,11 +142,12 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 
 func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
-	createGroup, err := parseEventCreateGroup(event)
+	e, err := sdkTypes.ParseTypedEvent(event)
 	if err != nil {
 		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
 		return rawSql, err
 	}
+	createGroup := e.(*storageTypes.EventCreateGroup)
 
 	resourceName := ""
 	matchBucket, err := regexp.MatchString(groupBucketRegex, createGroup.GroupName)
@@ -200,11 +204,12 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 
 func (p *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
-	deleteGroup, err := parseEventDeleteGroup(event)
+	e, err := sdkTypes.ParseTypedEvent(event)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to parse EventDeleteGroup err: %s", p.Name(), err)
+		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
 		return rawSql, err
 	}
+	deleteGroup := e.(*storageTypes.EventDeleteGroup)
 
 	return fmt.Sprintf("update items set status = %d, updated_gnfd_height = %d where group_id = %d",
 		database.ItemDelisted, blockHeight, deleteGroup.GroupId.Uint64()), nil
@@ -212,11 +217,12 @@ func (p *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event ab
 
 func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
-	updateGroupExtra, err := parseEventUpdateGroupExtra(event)
+	e, err := sdkTypes.ParseTypedEvent(event)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to parse EventUpdateGroupExtra err: %s", p.Name(), err)
+		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
 		return rawSql, err
 	}
+	updateGroupExtra := e.(*storageTypes.EventUpdateGroupExtra)
 
 	_, err = p.itemDao.GetByGroupId(context.Background(), int64(updateGroupExtra.GroupId.Uint64()), true)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -238,11 +244,12 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 
 func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
-	putPolicy, err := parseEventPutPolicy(event)
+	e, err := sdkTypes.ParseTypedEvent(event)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to parse EventPutPolicy err: %s", p.Name(), err)
+		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
 		return rawSql, err
 	}
+	putPolicy := e.(*permTypes.EventPutPolicy)
 
 	resourceType := database.UNKNOWN
 	if putPolicy.ResourceType == resource.RESOURCE_TYPE_BUCKET {
@@ -255,7 +262,7 @@ func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abci
 	}
 
 	groupId := math.NewUint(0)
-	if putPolicy.Principal.Type == types.PRINCIPAL_TYPE_GNFD_GROUP {
+	if putPolicy.Principal.Type == permTypes.PRINCIPAL_TYPE_GNFD_GROUP {
 		groupId, err = putPolicy.Principal.GetGroupID()
 		if err != nil {
 			return rawSql, err
