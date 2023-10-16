@@ -63,7 +63,10 @@ func (p *BscBlockProcessor) GetBlockchainBlockHeight() (uint64, error) {
 }
 
 func (p *BscBlockProcessor) Process(blockHeight uint64) error {
-	topics := []ethcommon.Hash{ethcommon.HexToHash(eventBuyTopic), ethcommon.HexToHash(eventDelistTopic)}
+	topics := []ethcommon.Hash{ethcommon.HexToHash(eventBuyTopic),
+		ethcommon.HexToHash(eventListTopic),
+		ethcommon.HexToHash(eventDelistTopic),
+	}
 	logs, err := p.client.QueryChainLogs(blockHeight, blockHeight, topics, p.marketplaceContract)
 	if err != nil {
 		util.Logger.Errorf("processor: %s, fail to query chain logs err: %s", p.Name(), err)
@@ -82,7 +85,16 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 		}
 		rawSqls = append(rawSqls, sqls...)
 
-		sql, err := p.handleEventDelist(blockHeight, l)
+		sql, err := p.handleEventList(blockHeight, l)
+		if err != nil {
+			util.Logger.Errorf("processor: %s, fail to handle EventDelist err: %s", p.Name(), err)
+			return err
+		}
+		if sql != "" {
+			rawSqls = append(rawSqls, sql)
+		}
+
+		sql, err = p.handleEventDelist(blockHeight, l)
 		if err != nil {
 			util.Logger.Errorf("processor: %s, fail to handle EventDelist err: %s", p.Name(), err)
 			return err
@@ -162,17 +174,33 @@ func (p *BscBlockProcessor) handleEventBuy(blockHeight uint64, l types.Log) ([]s
 	return rawSqls, nil
 }
 
-func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) (string, error) {
-	event, err := parseDelistEvent(p.marketplaceAbi, l)
+func (p *BscBlockProcessor) handleEventList(blockHeight uint64, l types.Log) (string, error) {
+	event, err := parseListEvent(p.marketplaceAbi, l)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to parse BuyEvent err: %s", p.Name(), err)
+		util.Logger.Errorf("processor: %s, fail to parse ListEvent err: %s", p.Name(), err)
 		return "", err
 	}
 	if event == nil {
 		return "", nil
 	}
 
-	rawSql := fmt.Sprintf("update item set status = %d, updated_bsc_height = %d where group_id = %d ",
+	rawSql := fmt.Sprintf("update items set status = %d, price = %s, updated_bsc_height = %d where group_id = %d ",
+		database.ItemListed, event.Price, blockHeight, event.GroupId)
+
+	return rawSql, nil
+}
+
+func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) (string, error) {
+	event, err := parseDelistEvent(p.marketplaceAbi, l)
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse DelistEvent err: %s", p.Name(), err)
+		return "", err
+	}
+	if event == nil {
+		return "", nil
+	}
+
+	rawSql := fmt.Sprintf("update items set status = %d, updated_bsc_height = %d where group_id = %d ",
 		database.ItemDelisted, blockHeight, event.GroupId)
 
 	return rawSql, nil
