@@ -272,6 +272,6 @@ func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abci
 		return rawSql, nil
 	}
 
-	return fmt.Sprintf("update items set `type` = %d, resource_id = %d, status = %d, updated_gnfd_height = %d where group_id = %d",
-		resourceType, putPolicy.ResourceId.Uint64(), database.ItemPending, blockHeight, groupId.Uint64()), nil
+	return fmt.Sprintf("update items set `type` = %d, resource_id = %d, updated_gnfd_height = %d where group_id = %d",
+		resourceType, putPolicy.ResourceId.Uint64(), blockHeight, groupId.Uint64()), nil
 }
