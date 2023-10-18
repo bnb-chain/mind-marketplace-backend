@@ -26,17 +26,30 @@ type GnfdBlockProcessor struct {
 	itemDao      dao.ItemDao
 	db           *gorm.DB
 	metricServer *metric.MetricService
+
+	groupBucketRegex  string
+	groupBucketPrefix string
+	groupObjectRegex  string
+	groupObjectPrefix string
 }
 
 func NewGnfdBlockProcessor(client *GnfdCompositeClients,
 	blockDao dao.GnfdBlockDao, itemDao dao.ItemDao, db *gorm.DB,
-	metricServer *metric.MetricService) *GnfdBlockProcessor {
+	metricServer *metric.MetricService,
+	groupBucketRegex string,
+	groupBucketPrefix string,
+	groupObjectRegex string,
+	groupObjectPrefix string) *GnfdBlockProcessor {
 	return &GnfdBlockProcessor{
-		client:       client,
-		blockDao:     blockDao,
-		itemDao:      itemDao,
-		db:           db,
-		metricServer: metricServer,
+		client:            client,
+		blockDao:          blockDao,
+		itemDao:           itemDao,
+		db:                db,
+		metricServer:      metricServer,
+		groupBucketRegex:  groupBucketRegex,
+		groupBucketPrefix: groupBucketPrefix,
+		groupObjectRegex:  groupObjectRegex,
+		groupObjectPrefix: groupObjectPrefix,
 	}
 }
 
@@ -150,12 +163,12 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 	createGroup := e.(*storageTypes.EventCreateGroup)
 
 	resourceName := ""
-	matchBucket, err := regexp.MatchString(groupBucketRegex, createGroup.GroupName)
+	matchBucket, err := regexp.MatchString(p.groupBucketRegex, createGroup.GroupName)
 	if err != nil {
 		return rawSql, err
 	}
 
-	matchObject, err := regexp.MatchString(groupObjectRegex, createGroup.GroupName)
+	matchObject, err := regexp.MatchString(p.groupObjectRegex, createGroup.GroupName)
 	if err != nil {
 		return rawSql, err
 	}
@@ -166,9 +179,9 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 	}
 
 	if matchBucket {
-		resourceName = strings.Replace(createGroup.GroupName, groupBucketPrefix, "", 1)
+		resourceName = strings.Replace(createGroup.GroupName, p.groupBucketPrefix, "", 1)
 	} else {
-		bucketNameObjectName := strings.Replace(createGroup.GroupName, groupObjectPrefix, "", 1)
+		bucketNameObjectName := strings.Replace(createGroup.GroupName, p.groupObjectPrefix, "", 1)
 		_, objectName, found := strings.Cut(bucketNameObjectName, "_")
 		if !found {
 			return rawSql, errors.New("cannot parse object name")

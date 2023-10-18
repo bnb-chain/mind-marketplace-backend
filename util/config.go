@@ -61,6 +61,11 @@ type MonitorConfig struct {
 	GnfdChainId     string   `json:"gnfd_chain_id"`
 	GnfdStartHeight uint64   `json:"gnfd_start_height"`
 
+	GroupBucketRegex  string `json:"group_bucket_regex"`  // example "dm_b_.*"
+	GroupBucketPrefix string `json:"group_bucket_prefix"` // example "dm_b_"
+	GroupObjectRegex  string `json:"group_object_regex"`  // example "dm_o_.*"
+	GroupObjectPrefix string `json:"group_object_prefix"` // example "dm_o_"
+
 	DBConfig  *DBConfig  `json:"db_config"`
 	LogConfig *LogConfig `json:"log_config"`
 }
