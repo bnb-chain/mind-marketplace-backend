@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 	"github.com/coocood/freecache"
 )
 

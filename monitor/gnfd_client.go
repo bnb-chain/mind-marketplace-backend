@@ -2,7 +2,7 @@ package monitor
 
 import (
 	"context"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 	ctypes "github.com/cometbft/cometbft/rpc/core/types"
 	bfttypes "github.com/cometbft/cometbft/types"
 	"sync"

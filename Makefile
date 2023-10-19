@@ -3,9 +3,9 @@ PACKAGES=$(shell go list ./dao ./service ./monitor/.)
 
 build_monitor:
 ifeq ($(OS),Windows_NT)
-	go build $(BUILD_FLAGS) -o build/monitor.exe cmd/greenfield-data-marketplace-monitor/main.go
+	go build $(BUILD_FLAGS) -o build/monitor.exe cmd/mind-marketplace-monitor/main.go
 else
-	go build $(BUILD_FLAGS) -o build/monitor cmd/greenfield-data-marketplace-monitor/main.go
+	go build $(BUILD_FLAGS) -o build/monitor cmd/mind-marketplace-monitor/main.go
 endif
 
 #build_monitor_docker:
@@ -13,9 +13,9 @@ endif
 
 build_server:
 ifeq ($(OS),Windows_NT)
-	go build $(BUILD_FLAGS) -o build/server.exe cmd/greenfield-data-marketplace-server/main.go
+	go build $(BUILD_FLAGS) -o build/server.exe cmd/mind-marketplace-server/main.go
 else
-	go build $(BUILD_FLAGS) -o build/server cmd/greenfield-data-marketplace-server/main.go
+	go build $(BUILD_FLAGS) -o build/server cmd/mind-marketplace-server/main.go
 endif
 
 #build_server_docker:
@@ -33,7 +33,7 @@ lint:
 	golangci-lint run
 
 genswagger:
-	swagger generate server -f ./swagger.yaml -A greenfield-data-marketplace --default-scheme=http
+	swagger generate server -f ./swagger.yaml -A mind-marketplace --default-scheme=http
 
 genabi:
 	./script/abigen --abi ./monitor/contracts/marketplace.abi --pkg contracts --out ./monitor/contracts/marketplace.go --type Marketplace

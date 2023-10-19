@@ -1,7 +1,7 @@
 package monitor
 
 import (
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/monitor/contracts"
+	"github.com/bnb-chain/mind-marketplace-backend/monitor/contracts"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"

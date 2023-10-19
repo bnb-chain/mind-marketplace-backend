@@ -15,7 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 )
 
 type BscClient struct {

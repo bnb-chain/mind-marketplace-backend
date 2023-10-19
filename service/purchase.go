@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/models"
+	"github.com/bnb-chain/mind-marketplace-backend/dao"
+	"github.com/bnb-chain/mind-marketplace-backend/models"
 )
 
 type Purchase interface {

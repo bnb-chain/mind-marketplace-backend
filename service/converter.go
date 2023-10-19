@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/models"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/database"
+	"github.com/bnb-chain/mind-marketplace-backend/models"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 )
 
 func convertAccount(account database.Account) *models.Account {

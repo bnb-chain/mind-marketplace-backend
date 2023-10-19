@@ -6,7 +6,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 )
 
 func Connect() (*gorm.DB, error) {

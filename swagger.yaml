@@ -331,7 +331,7 @@ definitions:
         x-go-type:
           type: Decimal
           import:
-            package: "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+            package: "github.com/bnb-chain/mind-marketplace-backend/util"
       createdAt:
         type: integer
         format: int64
@@ -343,7 +343,7 @@ definitions:
         x-go-type:
           type: Decimal
           import:
-            package: "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+            package: "github.com/bnb-chain/mind-marketplace-backend/util"
       totalSale:
         type: integer
         format: int64
@@ -467,7 +467,7 @@ definitions:
         x-go-type:
           type: Decimal
           import:
-            package: "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+            package: "github.com/bnb-chain/mind-marketplace-backend/util"
       createdAt:
         type: integer
         format: int64

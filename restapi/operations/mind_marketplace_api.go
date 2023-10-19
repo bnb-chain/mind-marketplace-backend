@@ -19,14 +19,14 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations/account"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations/item"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations/purchase"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations/account"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations/item"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations/purchase"
 )
 
-// NewGreenfieldDataMarketplaceAPI creates a new GreenfieldDataMarketplace instance
-func NewGreenfieldDataMarketplaceAPI(spec *loads.Document) *GreenfieldDataMarketplaceAPI {
-	return &GreenfieldDataMarketplaceAPI{
+// NewMindMarketplaceAPI creates a new MindMarketplace instance
+func NewMindMarketplaceAPI(spec *loads.Document) *MindMarketplaceAPI {
+	return &MindMarketplaceAPI{
 		handlers:            make(map[string]map[string]http.Handler),
 		formats:             strfmt.Default,
 		defaultConsumes:     "application/json",
@@ -67,8 +67,8 @@ func NewGreenfieldDataMarketplaceAPI(spec *loads.Document) *GreenfieldDataMarket
 	}
 }
 
-/*GreenfieldDataMarketplaceAPI Swagger document for data marketplace apis. */
-type GreenfieldDataMarketplaceAPI struct {
+/*MindMarketplaceAPI Swagger document for data marketplace apis. */
+type MindMarketplaceAPI struct {
 	spec            *loads.Document
 	context         *middleware.Context
 	handlers        map[string]map[string]http.Handler
@@ -133,52 +133,52 @@ type GreenfieldDataMarketplaceAPI struct {
 }
 
 // UseRedoc for documentation at /docs
-func (o *GreenfieldDataMarketplaceAPI) UseRedoc() {
+func (o *MindMarketplaceAPI) UseRedoc() {
 	o.useSwaggerUI = false
 }
 
 // UseSwaggerUI for documentation at /docs
-func (o *GreenfieldDataMarketplaceAPI) UseSwaggerUI() {
+func (o *MindMarketplaceAPI) UseSwaggerUI() {
 	o.useSwaggerUI = true
 }
 
 // SetDefaultProduces sets the default produces media type
-func (o *GreenfieldDataMarketplaceAPI) SetDefaultProduces(mediaType string) {
+func (o *MindMarketplaceAPI) SetDefaultProduces(mediaType string) {
 	o.defaultProduces = mediaType
 }
 
 // SetDefaultConsumes returns the default consumes media type
-func (o *GreenfieldDataMarketplaceAPI) SetDefaultConsumes(mediaType string) {
+func (o *MindMarketplaceAPI) SetDefaultConsumes(mediaType string) {
 	o.defaultConsumes = mediaType
 }
 
 // SetSpec sets a spec that will be served for the clients.
-func (o *GreenfieldDataMarketplaceAPI) SetSpec(spec *loads.Document) {
+func (o *MindMarketplaceAPI) SetSpec(spec *loads.Document) {
 	o.spec = spec
 }
 
 // DefaultProduces returns the default produces media type
-func (o *GreenfieldDataMarketplaceAPI) DefaultProduces() string {
+func (o *MindMarketplaceAPI) DefaultProduces() string {
 	return o.defaultProduces
 }
 
 // DefaultConsumes returns the default consumes media type
-func (o *GreenfieldDataMarketplaceAPI) DefaultConsumes() string {
+func (o *MindMarketplaceAPI) DefaultConsumes() string {
 	return o.defaultConsumes
 }
 
 // Formats returns the registered string formats
-func (o *GreenfieldDataMarketplaceAPI) Formats() strfmt.Registry {
+func (o *MindMarketplaceAPI) Formats() strfmt.Registry {
 	return o.formats
 }
 
 // RegisterFormat registers a custom format validator
-func (o *GreenfieldDataMarketplaceAPI) RegisterFormat(name string, format strfmt.Format, validator strfmt.Validator) {
+func (o *MindMarketplaceAPI) RegisterFormat(name string, format strfmt.Format, validator strfmt.Validator) {
 	o.formats.Add(name, format, validator)
 }
 
-// Validate validates the registrations in the GreenfieldDataMarketplaceAPI
-func (o *GreenfieldDataMarketplaceAPI) Validate() error {
+// Validate validates the registrations in the MindMarketplaceAPI
+func (o *MindMarketplaceAPI) Validate() error {
 	var unregistered []string
 
 	if o.JSONConsumer == nil {
@@ -216,23 +216,23 @@ func (o *GreenfieldDataMarketplaceAPI) Validate() error {
 }
 
 // ServeErrorFor gets a error handler for a given operation id
-func (o *GreenfieldDataMarketplaceAPI) ServeErrorFor(operationID string) func(http.ResponseWriter, *http.Request, error) {
+func (o *MindMarketplaceAPI) ServeErrorFor(operationID string) func(http.ResponseWriter, *http.Request, error) {
 	return o.ServeError
 }
 
 // AuthenticatorsFor gets the authenticators for the specified security schemes
-func (o *GreenfieldDataMarketplaceAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
+func (o *MindMarketplaceAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 	return nil
 }
 
 // Authorizer returns the registered authorizer
-func (o *GreenfieldDataMarketplaceAPI) Authorizer() runtime.Authorizer {
+func (o *MindMarketplaceAPI) Authorizer() runtime.Authorizer {
 	return nil
 }
 
 // ConsumersFor gets the consumers for the specified media types.
 // MIME type parameters are ignored here.
-func (o *GreenfieldDataMarketplaceAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consumer {
+func (o *MindMarketplaceAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consumer {
 	result := make(map[string]runtime.Consumer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
@@ -249,7 +249,7 @@ func (o *GreenfieldDataMarketplaceAPI) ConsumersFor(mediaTypes []string) map[str
 
 // ProducersFor gets the producers for the specified media types.
 // MIME type parameters are ignored here.
-func (o *GreenfieldDataMarketplaceAPI) ProducersFor(mediaTypes []string) map[string]runtime.Producer {
+func (o *MindMarketplaceAPI) ProducersFor(mediaTypes []string) map[string]runtime.Producer {
 	result := make(map[string]runtime.Producer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
@@ -265,7 +265,7 @@ func (o *GreenfieldDataMarketplaceAPI) ProducersFor(mediaTypes []string) map[str
 }
 
 // HandlerFor gets a http.Handler for the provided operation method and path
-func (o *GreenfieldDataMarketplaceAPI) HandlerFor(method, path string) (http.Handler, bool) {
+func (o *MindMarketplaceAPI) HandlerFor(method, path string) (http.Handler, bool) {
 	if o.handlers == nil {
 		return nil, false
 	}
@@ -280,8 +280,8 @@ func (o *GreenfieldDataMarketplaceAPI) HandlerFor(method, path string) (http.Han
 	return h, ok
 }
 
-// Context returns the middleware context for the greenfield data marketplace API
-func (o *GreenfieldDataMarketplaceAPI) Context() *middleware.Context {
+// Context returns the middleware context for the mind marketplace API
+func (o *MindMarketplaceAPI) Context() *middleware.Context {
 	if o.context == nil {
 		o.context = middleware.NewRoutableContext(o.spec, o, nil)
 	}
@@ -289,7 +289,7 @@ func (o *GreenfieldDataMarketplaceAPI) Context() *middleware.Context {
 	return o.context
 }
 
-func (o *GreenfieldDataMarketplaceAPI) initHandlerCache() {
+func (o *MindMarketplaceAPI) initHandlerCache() {
 	o.Context() // don't care about the result, just that the initialization happened
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
@@ -323,7 +323,7 @@ func (o *GreenfieldDataMarketplaceAPI) initHandlerCache() {
 
 // Serve creates a http handler to serve the API over HTTP
 // can be used directly in http.ListenAndServe(":8000", api.Serve(nil))
-func (o *GreenfieldDataMarketplaceAPI) Serve(builder middleware.Builder) http.Handler {
+func (o *MindMarketplaceAPI) Serve(builder middleware.Builder) http.Handler {
 	o.Init()
 
 	if o.Middleware != nil {
@@ -336,24 +336,24 @@ func (o *GreenfieldDataMarketplaceAPI) Serve(builder middleware.Builder) http.Ha
 }
 
 // Init allows you to just initialize the handler cache, you can then recompose the middleware as you see fit
-func (o *GreenfieldDataMarketplaceAPI) Init() {
+func (o *MindMarketplaceAPI) Init() {
 	if len(o.handlers) == 0 {
 		o.initHandlerCache()
 	}
 }
 
 // RegisterConsumer allows you to add (or override) a consumer for a media type.
-func (o *GreenfieldDataMarketplaceAPI) RegisterConsumer(mediaType string, consumer runtime.Consumer) {
+func (o *MindMarketplaceAPI) RegisterConsumer(mediaType string, consumer runtime.Consumer) {
 	o.customConsumers[mediaType] = consumer
 }
 
 // RegisterProducer allows you to add (or override) a producer for a media type.
-func (o *GreenfieldDataMarketplaceAPI) RegisterProducer(mediaType string, producer runtime.Producer) {
+func (o *MindMarketplaceAPI) RegisterProducer(mediaType string, producer runtime.Producer) {
 	o.customProducers[mediaType] = producer
 }
 
 // AddMiddlewareFor adds a http middleware to existing handler
-func (o *GreenfieldDataMarketplaceAPI) AddMiddlewareFor(method, path string, builder middleware.Builder) {
+func (o *MindMarketplaceAPI) AddMiddlewareFor(method, path string, builder middleware.Builder) {
 	um := strings.ToUpper(method)
 	if path == "/" {
 		path = ""

@@ -3,7 +3,7 @@ package dao
 import (
 	"context"
 	"fmt"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
+	"github.com/bnb-chain/mind-marketplace-backend/database"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )

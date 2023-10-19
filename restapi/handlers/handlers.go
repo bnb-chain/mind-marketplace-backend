@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/cors"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/service"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/service"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 )
 
 type responseWriter struct {

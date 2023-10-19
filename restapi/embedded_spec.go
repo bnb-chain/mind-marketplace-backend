@@ -429,7 +429,7 @@ func init() {
           "description": "price",
           "x-go-type": {
             "import": {
-              "package": "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+              "package": "github.com/bnb-chain/mind-marketplace-backend/util"
             },
             "type": "Decimal"
           },
@@ -460,7 +460,7 @@ func init() {
           "description": "all time trade volume, in wei unit",
           "x-go-type": {
             "import": {
-              "package": "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+              "package": "github.com/bnb-chain/mind-marketplace-backend/util"
             },
             "type": "Decimal"
           },
@@ -621,7 +621,7 @@ func init() {
           "description": "price",
           "x-go-type": {
             "import": {
-              "package": "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+              "package": "github.com/bnb-chain/mind-marketplace-backend/util"
             },
             "type": "Decimal"
           },
@@ -1188,7 +1188,7 @@ func init() {
           "description": "price",
           "x-go-type": {
             "import": {
-              "package": "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+              "package": "github.com/bnb-chain/mind-marketplace-backend/util"
             },
             "type": "Decimal"
           },
@@ -1219,7 +1219,7 @@ func init() {
           "description": "all time trade volume, in wei unit",
           "x-go-type": {
             "import": {
-              "package": "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+              "package": "github.com/bnb-chain/mind-marketplace-backend/util"
             },
             "type": "Decimal"
           },
@@ -1427,7 +1427,7 @@ func init() {
           "description": "price",
           "x-go-type": {
             "import": {
-              "package": "github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+              "package": "github.com/bnb-chain/mind-marketplace-backend/util"
             },
             "type": "Decimal"
           },

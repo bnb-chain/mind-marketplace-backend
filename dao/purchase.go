@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
+	"github.com/bnb-chain/mind-marketplace-backend/database"
 )
 
 const (

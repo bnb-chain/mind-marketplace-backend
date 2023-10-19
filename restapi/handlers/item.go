@@ -3,9 +3,9 @@ package handlers
 import (
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/models"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations/item"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/service"
+	"github.com/bnb-chain/mind-marketplace-backend/models"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations/item"
+	"github.com/bnb-chain/mind-marketplace-backend/service"
 )
 
 func HandleGetItem() func(params item.GetItemParams) middleware.Responder {

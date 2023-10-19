@@ -15,7 +15,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/validate"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/models"
+	"github.com/bnb-chain/mind-marketplace-backend/models"
 )
 
 // NewSearchItemParams creates a new SearchItemParams object

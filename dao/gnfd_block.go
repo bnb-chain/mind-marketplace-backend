@@ -2,7 +2,7 @@ package dao
 
 import (
 	"context"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
+	"github.com/bnb-chain/mind-marketplace-backend/database"
 	"gorm.io/gorm"
 )
 

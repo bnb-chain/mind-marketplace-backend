@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/metric"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/monitor"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/dao"
+	"github.com/bnb-chain/mind-marketplace-backend/database"
+	"github.com/bnb-chain/mind-marketplace-backend/metric"
+	"github.com/bnb-chain/mind-marketplace-backend/monitor"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )

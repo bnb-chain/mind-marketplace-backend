@@ -1,4 +1,4 @@
-module github.com/bnb-chain/greenfield-data-marketplace-backend
+module github.com/bnb-chain/mind-marketplace-backend
 
 go 1.20
 

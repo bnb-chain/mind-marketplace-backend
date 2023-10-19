@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/models"
+	"github.com/bnb-chain/mind-marketplace-backend/models"
 )
 
 // GetAccountOKCode is the HTTP code returned for type GetAccountOK

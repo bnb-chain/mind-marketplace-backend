@@ -4,30 +4,30 @@ package restapi
 
 import (
 	"crypto/tls"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/dao"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/database"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/handlers"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/service"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/util"
+	"github.com/bnb-chain/mind-marketplace-backend/dao"
+	"github.com/bnb-chain/mind-marketplace-backend/database"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/handlers"
+	"github.com/bnb-chain/mind-marketplace-backend/service"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 	"github.com/go-openapi/swag"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations/account"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations/item"
-	"github.com/bnb-chain/greenfield-data-marketplace-backend/restapi/operations/purchase"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations/account"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations/item"
+	"github.com/bnb-chain/mind-marketplace-backend/restapi/operations/purchase"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 )
 
-//go:generate swagger generate server --target ../../greenfield-data-marketplace-backend --name GreenfieldDataMarketplace --spec ../swagger.yaml --principal interface{}
+//go:generate swagger generate server --target ../../mind-marketplace-backend --name GreenfieldDataMarketplace --spec ../swagger.yaml --principal interface{}
 
 var cliOpts = struct {
 	ConfigFilePath string `short:"c" long:"config-path" description:"Config path" default:"config/server/dev.json"`
 }{}
 
-func configureFlags(api *operations.GreenfieldDataMarketplaceAPI) {
+func configureFlags(api *operations.MindMarketplaceAPI) {
 	param := swag.CommandLineOptionsGroup{
 		ShortDescription: "config",
 		Options:          &cliOpts,
@@ -35,7 +35,7 @@ func configureFlags(api *operations.GreenfieldDataMarketplaceAPI) {
 	api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{param}
 }
 
-func configureAPI(api *operations.GreenfieldDataMarketplaceAPI) http.Handler {
+func configureAPI(api *operations.MindMarketplaceAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 
@@ -113,5 +113,5 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // So this is a good place to plug in a panic handling middleware, logging and metrics.
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
 	config := util.ParseServerConfigFromFile(cliOpts.ConfigFilePath)
-	return handlers.SetupHandler(handler, "data-marketplace", config)
+	return handlers.SetupHandler(handler, "mind-marketplace", config)
 }
