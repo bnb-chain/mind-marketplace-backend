@@ -16,7 +16,7 @@ func NewMonitor(p BlockProcessor, startHeight uint64) *Monitor {
 }
 
 func (m *Monitor) Start() {
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(500 * time.Millisecond)
 	for range ticker.C {
 		err := m.run()
 		if err != nil {

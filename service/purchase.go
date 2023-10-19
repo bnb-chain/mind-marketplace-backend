@@ -63,6 +63,9 @@ func (s *PurchaseService) Search(context context.Context, request *models.Search
 	if request.Limit > 0 {
 		limit = int(request.Limit)
 	}
+	if limit > maxSearchLimit {
+		return 0, nil, TooBigLimitErr
+	}
 
 	total, purchases, err := s.purchaseDao.Search(context, itemId, address, sort, offset, limit)
 	if err != nil {

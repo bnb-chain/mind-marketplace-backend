@@ -61,6 +61,7 @@ func main() {
 
 	bscBlockDao := dao.NewDbBscBlockDao(db)
 	bscClient := monitor.NewBscCompositeClients(config.BscRpcAddrs, config.BscBlocksForFinality)
+	go bscClient.UpdateClientLoop()
 	bscProcessor := monitor.NewBscBlockProcessor(bscClient, config.BscMarketplaceContract, bscBlockDao, itemDao, db, metricServer)
 	bscMonitor := monitor.NewMonitor(bscProcessor, config.BscStartHeight)
 

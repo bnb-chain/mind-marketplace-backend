@@ -30,6 +30,7 @@ var (
 
 	InvalidAddressErr = Err{Code: 3000, Message: "invalid address"}
 	InvalidKeywordErr = Err{Code: 3500, Message: "invalid keyword, too short"}
+	TooBigLimitErr    = Err{Code: 3600, Message: "limit is too big"}
 
 	//NotFoundErr - not found error
 	NotFoundErr = Err{Code: 4000, Message: "cannot find"}

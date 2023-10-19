@@ -184,6 +184,7 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		bucketNameObjectName := strings.Replace(createGroup.GroupName, p.groupObjectPrefix, "", 1)
 		_, objectName, found := strings.Cut(bucketNameObjectName, "_")
 		if !found {
+			util.Logger.Errorf("processor: %s, fail to parse parse object name err: %s", p.Name(), err)
 			return rawSql, errors.New("cannot parse object name")
 		}
 		resourceName = objectName
@@ -198,7 +199,7 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return rawSql, err
 	}
-	// the group already created
+	// the group already created, return
 	if err == nil {
 		return rawSql, nil
 	}
@@ -215,11 +216,12 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		database.ItemPending, extra.Desc, extra.Url, extra.Price, block.Time.Unix(), blockHeight), nil
 }
 
+// for cross-chain created group, this could be useless
 func (p *GnfdBlockProcessor) handleEventDeleteGroup(blockHeight uint64, event abciTypes.Event) (string, error) {
 	rawSql := ""
 	e, err := sdkTypes.ParseTypedEvent(event)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
+		util.Logger.Errorf("processor: %s, fail to parse EventDeleteGroup err: %s", p.Name(), err)
 		return rawSql, err
 	}
 	deleteGroup := e.(*storageTypes.EventDeleteGroup)
@@ -232,7 +234,7 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 	rawSql := ""
 	e, err := sdkTypes.ParseTypedEvent(event)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
+		util.Logger.Errorf("processor: %s, fail to parse EventUpdateGroupExtra err: %s", p.Name(), err)
 		return rawSql, err
 	}
 	updateGroupExtra := e.(*storageTypes.EventUpdateGroupExtra)
@@ -242,7 +244,7 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 		return rawSql, err
 	}
 
-	if err != nil && err == gorm.ErrRecordNotFound { // the group we do not care about
+	if err != nil && err == gorm.ErrRecordNotFound { // the group we do not care about, ignore it
 		return rawSql, nil
 	}
 
@@ -259,7 +261,7 @@ func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abci
 	rawSql := ""
 	e, err := sdkTypes.ParseTypedEvent(event)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to parse EventCreateGroup err: %s", p.Name(), err)
+		util.Logger.Errorf("processor: %s, fail to parse EventPutPolicy err: %s", p.Name(), err)
 		return rawSql, err
 	}
 	putPolicy := e.(*permTypes.EventPutPolicy)
@@ -270,7 +272,7 @@ func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abci
 	} else if putPolicy.ResourceType == resource.RESOURCE_TYPE_OBJECT {
 		resourceType = database.OBJECT
 	}
-	if resourceType == database.UNKNOWN {
+	if resourceType == database.UNKNOWN { // resource type is unknown, ignore it
 		return rawSql, nil
 	}
 
@@ -281,7 +283,7 @@ func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abci
 			return rawSql, err
 		}
 	}
-	if groupId.IsZero() {
+	if groupId.IsZero() { // not a group, ignore it
 		return rawSql, nil
 	}
 

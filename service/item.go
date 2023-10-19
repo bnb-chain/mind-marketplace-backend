@@ -80,6 +80,9 @@ func (s *ItemService) Search(context context.Context, request *models.SearchItem
 	if request.Limit > 0 {
 		limit = int(request.Limit)
 	}
+	if limit > maxSearchLimit {
+		return 0, nil, TooBigLimitErr
+	}
 
 	total, items, err := s.itemDao.Search(context, address, keyword, false, sort, offset, limit)
 	if err != nil {

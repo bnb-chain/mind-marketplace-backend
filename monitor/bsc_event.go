@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"github.com/bnb-chain/mind-marketplace-backend/monitor/contracts"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
@@ -17,7 +16,7 @@ func isTargetEvent(targetTopic ethcommon.Hash, l types.Log) bool {
 	return targetTopic.String() == l.Topics[0].String()
 }
 
-func parseBuyEvent(abi *abi.ABI, l types.Log) (*contracts.MarketplaceBuy, error) {
+func parseBuyEvent(l types.Log) (*contracts.MarketplaceBuy, error) {
 	if !isTargetEvent(ethcommon.HexToHash(eventBuyTopic), l) {
 		return nil, nil
 	}
@@ -29,7 +28,7 @@ func parseBuyEvent(abi *abi.ABI, l types.Log) (*contracts.MarketplaceBuy, error)
 	return buy, nil
 }
 
-func parseListEvent(abi *abi.ABI, l types.Log) (*contracts.MarketplaceList, error) {
+func parseListEvent(l types.Log) (*contracts.MarketplaceList, error) {
 	if !isTargetEvent(ethcommon.HexToHash(eventListTopic), l) {
 		return nil, nil
 	}
@@ -42,7 +41,7 @@ func parseListEvent(abi *abi.ABI, l types.Log) (*contracts.MarketplaceList, erro
 	return list, nil
 }
 
-func parseDelistEvent(abi *abi.ABI, l types.Log) (*contracts.MarketplaceDelist, error) {
+func parseDelistEvent(l types.Log) (*contracts.MarketplaceDelist, error) {
 	if !isTargetEvent(ethcommon.HexToHash(eventDelistTopic), l) {
 		return nil, nil
 	}
