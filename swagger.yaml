@@ -1,0 +1,569 @@
+swagger: "2.0"
+info:
+  description: "Swagger document for data marketplace apis."
+  version: "1.0.0"
+  title: "Data Marketplace"
+  #termsOfService: "http://swagger.io/terms/"
+  #contact:
+  #  email: ""
+  #license:
+  #  name: "Apache 2.0"
+  #  url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "gnfd-testnet-marketplace.bnbchain.org"
+basePath: "/v1"
+tags:
+  - name: "account"
+    description: "Access to marketplace users"
+  - name: "item"
+    description: "Access to marketplace collections and objects"
+  - name: "purchase"
+    description: "Access to marketplace purchases"
+schemes:
+  - "http"
+  #- "https"
+paths:
+
+  /account/{address}:
+    get:
+      tags:
+        - "account"
+      summary: "Get account"
+      operationId: "getAccount"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "address"
+          in: "path"
+          description: "account address"
+          required: true
+          type: "string"
+          format: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/AccountResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+  /item/{itemId}:
+    get:
+      tags:
+        - "item"
+      summary: "Get item"
+      operationId: "getItem"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "itemId"
+          in: "path"
+          description: "id of item"
+          required: true
+          type: integer
+          format: int64
+          minLength: 1
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+  /item_by_group/{groupId}:
+    get:
+      tags:
+        - "item"
+      summary: "Get item by group"
+      operationId: "getItemByGroup"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "groupId"
+          in: "path"
+          description: "group"
+          required: true
+          type: integer
+          format: int64
+          minLength: 1
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+  /item/search:
+    post:
+      tags:
+        - "item"
+      summary: "Search item"
+      operationId: "searchItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/SearchItemRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/PageItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+  /purchase/{purchaseId}:
+    get:
+      tags:
+        - "purchase"
+      summary: "Get purchase"
+      operationId: "getPurchase"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "purchaseId"
+          in: "path"
+          description: "purchase id"
+          required: true
+          type: "integer"
+          format: "int64"
+          minimum: 1
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/PurchaseResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+  /purchase/search:
+    post:
+      tags:
+        - "purchase"
+      summary: "Search purchase"
+      operationId: "searchPurchase"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/SearchPurchaseRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/PagePurchaseResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+
+definitions:
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int64
+        description: "http error"
+        example: "400/500"
+      message:
+        type: string
+        description: "error message"
+        example: "bad request/internal server error"
+
+  Account:
+    type: object
+    required:
+      - id
+      - address
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: "id"
+        example: 100
+      address:
+        type: string
+        description: "account address"
+        example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+      twitterUserName:
+        type: string
+        description: "twitter user name"
+        example: "jsutdoit"
+      twitterVerified:
+        type: boolean
+        description: "whether twitter account is verified"
+        example: "true"
+      instagramUserName:
+        type: string
+        description: "instagram name"
+        example: "justdoit"
+      instagramVerified:
+        type: boolean
+        description: "whether instagram account is verified"
+        example: "true"
+      createdAt:
+        type: integer
+        format: int64
+        description: "create at,unix timestamp"
+        example: 1654171400
+
+  AccountResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        description: "code defined by api,not equal to http code"
+        example: 2000
+      message:
+        type: string
+        description: "error message if there is error"
+        example: "signature invalid"
+      data:
+        type: object
+        description: "actual data for request"
+        properties:
+          account:
+            $ref: "#/definitions/Account"
+
+  Item:
+    type: object
+    required:
+      - id
+      - type
+      - name
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: "id"
+        example: 100
+      type:
+        type: string
+        description: "type"
+        enum:
+          - COLLECTION
+          - OBJECT
+      name:
+        type: string
+        description: "bucket or object name"
+        example: "helloworld"
+      resourceId:
+        type: integer
+        format: int64
+        description: "bucket or object id"
+        example: 10
+      groupId:
+        type: integer
+        format: int64
+        description: "group id"
+        example: 10
+      groupName:
+        type: string
+        description: "name of the group"
+        example: "group_abc"
+      ownerAddress:
+        type: string
+        description: "address of the owner"
+        example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+      description:
+        type: string
+        description: "description"
+        example: "this is a crypto cat"
+      url:
+        type: string
+        description: "url for image"
+        example: "http://www.xx.xxx/xx.jpg"
+      price:
+        description: "price"
+        example: 12.34
+        x-go-type:
+          type: Decimal
+          import:
+            package: "github.com/bnb-chain/mind-marketplace-backend/util"
+      createdAt:
+        type: integer
+        format: int64
+        description: "create at, unix timestamp"
+        example: 1654173249
+      totalVolume:
+        description: "all time trade volume, in wei unit"
+        example: 290.68
+        x-go-type:
+          type: Decimal
+          import:
+            package: "github.com/bnb-chain/mind-marketplace-backend/util"
+      totalSale:
+        type: integer
+        format: int64
+        description: "all time trade times"
+        example: 10
+      status:
+        description: "status"
+        type: string
+        enum:
+          - PENDING
+          - LISTED
+          - BLOCKED
+
+  ItemResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        description: "code defined by api,not equal to http code"
+        example: 2000
+      message:
+        type: string
+        description: "error message if there is error"
+        example: "signature invalid"
+      data:
+        type: object
+        description: "actual data for request"
+        properties:
+          item:
+            $ref: "#/definitions/Item"
+
+  PageItemResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        description: "code defined by api,not equal to http code"
+        example: 2000
+      message:
+        type: string
+        description: "error message if there is error"
+        example: "signature invalid"
+      data:
+        type: object
+        description: "actual data for request"
+        properties:
+          total:
+            type: integer
+            format: int64
+            description: "total"
+            example: 1000
+            x-omitempty: false
+          items:
+            type: array
+            items:
+              $ref: "#/definitions/Item"
+
+  ItemFilter:
+    type: object
+    properties:
+      address:
+        description: "account address"
+        example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+        type: string
+        minLength: 1
+      keyword:
+        description: "search keyword"
+        example: "panda"
+        type: string
+        minLength: 1
+
+  SearchItemRequest:
+    type: object
+    properties:
+      filter:
+        description: "filter"
+        $ref: "#/definitions/ItemFilter"
+      sort:
+        description: "sort"
+        type: string
+        enum:
+          - CREATION_ASC
+          - CREATION_DESC
+          - TOTAL_VOLUME_ASC
+          - TOTAL_VOLUME_DESC
+          - TOTAL_SALE_ASC
+          - TOTAL_SALE_DESC
+        default: CREATION_DESC
+      offset:
+        type: integer
+        format: int64
+        description: "offset"
+        default: 0
+        minimum: 0
+      limit:
+        type: integer
+        format: int64
+        description: "limit"
+        default: 10
+        minimum: 1
+        maximum: 20
+
+  Purchase:
+    type: object
+    required:
+      - id
+      - buyerAddress
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: "id"
+        example: 100
+      buyerAddress:
+        type: string
+        description: "account address"
+        example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+      price:
+        description: "price"
+        example: 12.34
+        x-go-type:
+          type: Decimal
+          import:
+            package: "github.com/bnb-chain/mind-marketplace-backend/util"
+      createdAt:
+        type: integer
+        format: int64
+        description: "created at,unix timestamp"
+        example: 1654176354
+      item:
+        $ref: "#/definitions/Item"
+
+  PurchaseResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        description: "code defined by api,not equal to http code"
+        example: 2000
+      message:
+        type: string
+        description: "error message if there is error"
+        example: "signature invalid"
+      data:
+        type: object
+        description: "actual data for request"
+        properties:
+          purchase:
+            $ref: "#/definitions/Purchase"
+
+  PagePurchaseResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        description: "code defined by api,not equal to http code"
+        example: 2000
+      message:
+        type: string
+        description: "error message if there is error"
+        example: "signature invalid"
+      data:
+        type: object
+        description: "actual data for request"
+        properties:
+          total:
+            type: integer
+            format: int64
+            description: "total"
+            example: 1000
+            x-omitempty: false
+          purchases:
+            type: array
+            items:
+              $ref: "#/definitions/Purchase"
+
+  PurchaseFilter:
+    type: object
+    properties:
+      address:
+        description: "account address"
+        example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+        type: string
+        minLength: 1
+      itemId:
+        description: "item id"
+        example: 100
+        type: integer
+        minLength: 1
+
+
+  SearchPurchaseRequest:
+    type: object
+    properties:
+      filter:
+        description: "filter"
+        $ref: "#/definitions/PurchaseFilter"
+      sort:
+        description: "sort"
+        type: string
+        enum:
+          - CREATION_ASC
+          - CREATION_DESC
+          - PRICE_ASC
+          - PRICE_DESC
+        default: CREATION_DESC
+      offset:
+        type: integer
+        format: int64
+        description: "offset"
+        default: 0
+        minimum: 0
+      limit:
+        type: integer
+        format: int64
+        description: "limit"
+        default: 10
+        minimum: 1
+        maximum: 20
+
+externalDocs:
+  description: "Find out more about data marketplace"
+  url: "http://tobe.added"
