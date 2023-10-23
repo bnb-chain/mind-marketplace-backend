@@ -74,8 +74,8 @@ func (dao *dbItemDao) Get(context context.Context, id int64, includeAll bool) (d
 			return item, err
 		}
 	} else {
-		if err := dao.db.Preload("Stats").Where("id = ? and status <> ? and status <> ?",
-			id, database.ItemBlocked, database.ItemDelisted).Take(&item).Error; err != nil {
+		if err := dao.db.Preload("Stats").Where("id = ? and status <> ? and status <> ? and status <> ?",
+			id, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Take(&item).Error; err != nil {
 			return item, err
 		}
 	}
@@ -89,8 +89,8 @@ func (dao *dbItemDao) GetByGroupId(context context.Context, groupId int64, inclu
 			return item, err
 		}
 	} else {
-		if err := dao.db.Preload("Stats").Where("group_id = ? and status <> ? and status <> ?",
-			groupId, database.ItemBlocked, database.ItemDelisted).Take(&item).Error; err != nil {
+		if err := dao.db.Preload("Stats").Where("group_id = ? and status <> ? and status <> ?  and status <> ?",
+			groupId, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Take(&item).Error; err != nil {
 			return item, err
 		}
 	}
@@ -112,9 +112,10 @@ func (dao *dbItemDao) Search(context context.Context, address, keyword string, i
 	}
 
 	if !includeAll {
-		rawSql = rawSql + ` and status not in ( ?, ? ) `
+		rawSql = rawSql + ` and status not in ( ?, ?, ?) `
 		parameters = append(parameters, database.ItemDelisted)
 		parameters = append(parameters, database.ItemBlocked)
+		parameters = append(parameters, database.ItemPending)
 	}
 
 	countSql := "select count(1) from items " + rawSql
