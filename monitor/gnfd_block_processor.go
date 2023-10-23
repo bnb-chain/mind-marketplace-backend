@@ -20,9 +20,13 @@ import (
 	"gorm.io/gorm"
 )
 
+// unknownCategoryId defines the id of unknown category in database
+const unknownCategoryId = int64(0)
+
 type GnfdBlockProcessor struct {
 	client       *GnfdCompositeClients
 	blockDao     dao.GnfdBlockDao
+	categoryDao  dao.CategoryDao
 	itemDao      dao.ItemDao
 	db           *gorm.DB
 	metricServer *metric.MetricService
@@ -34,7 +38,7 @@ type GnfdBlockProcessor struct {
 }
 
 func NewGnfdBlockProcessor(client *GnfdCompositeClients,
-	blockDao dao.GnfdBlockDao, itemDao dao.ItemDao, db *gorm.DB,
+	blockDao dao.GnfdBlockDao, categoryDao dao.CategoryDao, itemDao dao.ItemDao, db *gorm.DB,
 	metricServer *metric.MetricService,
 	groupBucketRegex string,
 	groupBucketPrefix string,
@@ -43,6 +47,7 @@ func NewGnfdBlockProcessor(client *GnfdCompositeClients,
 	return &GnfdBlockProcessor{
 		client:            client,
 		blockDao:          blockDao,
+		categoryDao:       categoryDao,
 		itemDao:           itemDao,
 		db:                db,
 		metricServer:      metricServer,
@@ -195,6 +200,8 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		return rawSql, err
 	}
 
+	categoryId := p.getCategoryId(extra)
+
 	_, err = p.itemDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()), true)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return rawSql, err
@@ -210,10 +217,21 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		return rawSql, err
 	}
 
-	return fmt.Sprintf("insert into items (group_id, group_name, name, owner_address, status, description, url, price, listed_at, created_gnfd_height)"+
-		" values (%d, '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d)",
-		createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
-		database.ItemPending, escape(extra.Desc), escape(extra.Url), extra.Price, block.Time.Unix(), blockHeight), nil
+	return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height)"+
+		" values (%d, %d, '%s', '%s', '%s', %d, '%s', '%s', %d, %d)",
+		categoryId, createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
+		database.ItemPending, escape(extra.Desc), escape(extra.Url), block.Time.Unix(), blockHeight), nil
+}
+
+func (p *GnfdBlockProcessor) getCategoryId(extra *Extra) int64 {
+	categoryId := unknownCategoryId
+	if extra.Category != "" {
+		category, err := p.categoryDao.Get(context.Background(), strings.ToLower(extra.Category))
+		if err == nil {
+			categoryId = category.Id
+		}
+	}
+	return categoryId
 }
 
 // for cross-chain created group, this could be useless
@@ -253,8 +271,10 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 		return rawSql, err
 	}
 
-	return fmt.Sprintf("update items set description = '%s', url = '%s',updated_gnfd_height = %d where group_id = %d",
-		escape(extra.Desc), escape(extra.Url), blockHeight, updateGroupExtra.GroupId.Uint64()), nil
+	categoryId := p.getCategoryId(extra)
+
+	return fmt.Sprintf("update items set category_id = %d, description = '%s', url = '%s', updated_gnfd_height = %d where group_id = %d",
+		categoryId, escape(extra.Desc), escape(extra.Url), blockHeight, updateGroupExtra.GroupId.Uint64()), nil
 }
 
 func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abciTypes.Event) (string, error) {

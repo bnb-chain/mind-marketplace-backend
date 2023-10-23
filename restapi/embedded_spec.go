@@ -30,6 +30,51 @@ func init() {
   "host": "gnfd-testnet-marketplace.bnbchain.org",
   "basePath": "/v1",
   "paths": {
+    "/account/update": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "Update account",
+        "operationId": "updateAccount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/AccountResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/account/{address}": {
       "get": {
         "produces": [
@@ -55,6 +100,38 @@ func init() {
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/AccountResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/item/categories": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get all item categories",
+        "operationId": "getCategory",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ListCategoryResponse"
             }
           },
           "400": {
@@ -363,6 +440,26 @@ func init() {
         }
       }
     },
+    "Category": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "description": "id",
+          "type": "integer",
+          "format": "int",
+          "example": 1
+        },
+        "name": {
+          "description": "name",
+          "type": "string",
+          "example": "Art"
+        }
+      }
+    },
     "Error": {
       "type": "object",
       "properties": {
@@ -387,6 +484,12 @@ func init() {
         "name"
       ],
       "properties": {
+        "categoryId": {
+          "description": "category id",
+          "type": "integer",
+          "format": "int",
+          "example": 1
+        },
         "createdAt": {
           "description": "create at, unix timestamp",
           "type": "integer",
@@ -490,6 +593,12 @@ func init() {
           "minLength": 1,
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "categoryId": {
+          "description": "id of category",
+          "type": "integer",
+          "minLength": 1,
+          "example": 1
+        },
         "keyword": {
           "description": "search keyword",
           "type": "string",
@@ -512,6 +621,33 @@ func init() {
           "properties": {
             "item": {
               "$ref": "#/definitions/Item"
+            }
+          }
+        },
+        "message": {
+          "description": "error message if there is error",
+          "type": "string",
+          "example": "signature invalid"
+        }
+      }
+    },
+    "ListCategoryResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "code defined by api,not equal to http code",
+          "type": "integer",
+          "example": 2000
+        },
+        "data": {
+          "description": "actual data for request",
+          "type": "object",
+          "properties": {
+            "categories": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Category"
+              }
             }
           }
         },
@@ -739,6 +875,51 @@ func init() {
           ]
         }
       }
+    },
+    "UpdateAccountRequest": {
+      "type": "object",
+      "required": [
+        "address",
+        "timestamp",
+        "signature"
+      ],
+      "properties": {
+        "address": {
+          "description": "account address",
+          "type": "string",
+          "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+        },
+        "bio": {
+          "description": "self description",
+          "type": "string",
+          "maxLength": 1024,
+          "example": "interested in web3"
+        },
+        "instagramUserName": {
+          "description": "instagram user name",
+          "type": "string",
+          "maxLength": 256,
+          "minLength": 3,
+          "example": "justdoit"
+        },
+        "signature": {
+          "description": "signature, format ` + "`" + `{accountName}_update_account_{timestamp}` + "`" + `, signed with account seed",
+          "type": "string",
+          "example": "b6c68a22f98c5f37347f7e2d4dc6ee48df31d5b86ef123d984969432f14c9a970283a157ef260b6341215b76764a1d5d4b29379fc50359164b53c2ce16d4cbd7"
+        },
+        "timestamp": {
+          "description": "unix timestamp",
+          "type": "integer",
+          "example": 1654171400
+        },
+        "twitterUserName": {
+          "description": "twitter user name",
+          "type": "string",
+          "maxLength": 256,
+          "minLength": 3,
+          "example": "jsutdoit"
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -780,6 +961,51 @@ func init() {
   "host": "gnfd-testnet-marketplace.bnbchain.org",
   "basePath": "/v1",
   "paths": {
+    "/account/update": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "Update account",
+        "operationId": "updateAccount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/AccountResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/account/{address}": {
       "get": {
         "produces": [
@@ -805,6 +1031,38 @@ func init() {
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/AccountResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/item/categories": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get all item categories",
+        "operationId": "getCategory",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ListCategoryResponse"
             }
           },
           "400": {
@@ -1122,6 +1380,26 @@ func init() {
         }
       }
     },
+    "Category": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "description": "id",
+          "type": "integer",
+          "format": "int",
+          "example": 1
+        },
+        "name": {
+          "description": "name",
+          "type": "string",
+          "example": "Art"
+        }
+      }
+    },
     "Error": {
       "type": "object",
       "properties": {
@@ -1146,6 +1424,12 @@ func init() {
         "name"
       ],
       "properties": {
+        "categoryId": {
+          "description": "category id",
+          "type": "integer",
+          "format": "int",
+          "example": 1
+        },
         "createdAt": {
           "description": "create at, unix timestamp",
           "type": "integer",
@@ -1249,6 +1533,12 @@ func init() {
           "minLength": 1,
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "categoryId": {
+          "description": "id of category",
+          "type": "integer",
+          "minLength": 1,
+          "example": 1
+        },
         "keyword": {
           "description": "search keyword",
           "type": "string",
@@ -1287,6 +1577,45 @@ func init() {
       "properties": {
         "item": {
           "$ref": "#/definitions/Item"
+        }
+      }
+    },
+    "ListCategoryResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "code defined by api,not equal to http code",
+          "type": "integer",
+          "example": 2000
+        },
+        "data": {
+          "description": "actual data for request",
+          "type": "object",
+          "properties": {
+            "categories": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Category"
+              }
+            }
+          }
+        },
+        "message": {
+          "description": "error message if there is error",
+          "type": "string",
+          "example": "signature invalid"
+        }
+      }
+    },
+    "ListCategoryResponseData": {
+      "description": "actual data for request",
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Category"
+          }
         }
       }
     },
@@ -1554,6 +1883,52 @@ func init() {
             "PRICE_ASC",
             "PRICE_DESC"
           ]
+        }
+      }
+    },
+    "UpdateAccountRequest": {
+      "type": "object",
+      "required": [
+        "address",
+        "timestamp",
+        "signature"
+      ],
+      "properties": {
+        "address": {
+          "description": "account address",
+          "type": "string",
+          "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+        },
+        "bio": {
+          "description": "self description",
+          "type": "string",
+          "maxLength": 1024,
+          "minLength": 0,
+          "example": "interested in web3"
+        },
+        "instagramUserName": {
+          "description": "instagram user name",
+          "type": "string",
+          "maxLength": 256,
+          "minLength": 3,
+          "example": "justdoit"
+        },
+        "signature": {
+          "description": "signature, format ` + "`" + `{accountName}_update_account_{timestamp}` + "`" + `, signed with account seed",
+          "type": "string",
+          "example": "b6c68a22f98c5f37347f7e2d4dc6ee48df31d5b86ef123d984969432f14c9a970283a157ef260b6341215b76764a1d5d4b29379fc50359164b53c2ce16d4cbd7"
+        },
+        "timestamp": {
+          "description": "unix timestamp",
+          "type": "integer",
+          "example": 1654171400
+        },
+        "twitterUserName": {
+          "description": "twitter user name",
+          "type": "string",
+          "maxLength": 256,
+          "minLength": 3,
+          "example": "jsutdoit"
         }
       }
     }

@@ -58,7 +58,9 @@ func configureAPI(api *operations.MindMarketplaceAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.AccountGetAccountHandler = account.GetAccountHandlerFunc(handlers.HandleGetAccount())
+	api.AccountUpdateAccountHandler = account.UpdateAccountHandlerFunc(handlers.HandleUpdateAccount())
 
+	api.ItemGetCategoryHandler = item.GetCategoryHandlerFunc(handlers.HandleGetAllCategory())
 	api.ItemGetItemHandler = item.GetItemHandlerFunc(handlers.HandleGetItem())
 	api.ItemGetItemByGroupHandler = item.GetItemByGroupHandlerFunc(handlers.HandleGetItemByGroup())
 	api.ItemSearchItemHandler = item.SearchItemHandlerFunc(handlers.HandleSearchItem())

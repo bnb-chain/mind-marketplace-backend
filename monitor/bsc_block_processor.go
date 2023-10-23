@@ -67,6 +67,7 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 		ethcommon.HexToHash(eventBuyTopic),
 		ethcommon.HexToHash(eventListTopic),
 		ethcommon.HexToHash(eventDelistTopic),
+		ethcommon.HexToHash(eventPriceUpdatedTopic),
 	}
 	logs, err := p.client.QueryChainLogs(blockHeight, blockHeight, topics, p.marketplaceContract)
 	if err != nil {
@@ -90,7 +91,7 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 
 		sql, err := p.handleEventList(blockHeight, l)
 		if err != nil {
-			util.Logger.Errorf("processor: %s, fail to handle EventDelist err: %s", p.Name(), err)
+			util.Logger.Errorf("processor: %s, fail to handle EventList err: %s", p.Name(), err)
 			return err
 		}
 		if sql != "" {
@@ -100,6 +101,15 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 		sql, err = p.handleEventDelist(blockHeight, l)
 		if err != nil {
 			util.Logger.Errorf("processor: %s, fail to handle EventDelist err: %s", p.Name(), err)
+			return err
+		}
+		if sql != "" {
+			rawSqls = append(rawSqls, sql)
+		}
+
+		sql, err = p.handleEventPriceUpdated(blockHeight, l)
+		if err != nil {
+			util.Logger.Errorf("processor: %s, fail to handle EventPriceUpdated err: %s", p.Name(), err)
 			return err
 		}
 		if sql != "" {
@@ -219,6 +229,22 @@ func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) (
 
 	rawSql := fmt.Sprintf("update items set status = %d, updated_bsc_height = %d where group_id = %d ",
 		database.ItemDelisted, blockHeight, event.GroupId)
+
+	return rawSql, nil
+}
+
+func (p *BscBlockProcessor) handleEventPriceUpdated(blockHeight uint64, l types.Log) (string, error) {
+	event, err := parsePriceUpdatedEvent(l)
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse PriceUpdatedEvent err: %s", p.Name(), err)
+		return "", err
+	}
+	if event == nil {
+		return "", nil
+	}
+
+	rawSql := fmt.Sprintf("update items set pricegi = '%s', updated_bsc_height = %d where group_id = %d ",
+		event.Price, blockHeight, event.GroupId)
 
 	return rawSql, nil
 }

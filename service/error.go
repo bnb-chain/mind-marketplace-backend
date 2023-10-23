@@ -28,7 +28,10 @@ var (
 	// NoErr - success
 	NoErr = Err{Code: 2000}
 
-	InvalidAddressErr = Err{Code: 3000, Message: "invalid address"}
+	InvalidAddressErr   = Err{Code: 3000, Message: "invalid address"}
+	InvalidSigErr       = Err{3010, "invalid signature"}
+	InvalidTimestampErr = Err{3020, "invalid timestamp"}
+
 	InvalidKeywordErr = Err{Code: 3500, Message: "invalid keyword, too short"}
 	TooBigLimitErr    = Err{Code: 3600, Message: "limit is too big"}
 
