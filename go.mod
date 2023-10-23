@@ -9,6 +9,7 @@ require (
 	github.com/bnb-chain/greenfield-go-sdk v0.2.6
 	github.com/cometbft/cometbft v0.37.2
 	github.com/coocood/freecache v1.2.4
+	github.com/cosmos/cosmos-sdk v0.47.3
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/go-openapi/errors v0.20.4
 	github.com/go-openapi/loads v0.21.2
@@ -58,7 +59,6 @@ require (
 	github.com/consensys/gnark-crypto v0.10.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3 // indirect
-	github.com/cosmos/cosmos-sdk v0.47.3 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogoproto v1.4.10 // indirect
 	github.com/cosmos/iavl v0.20.0 // indirect
