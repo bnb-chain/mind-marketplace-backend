@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"github.com/avast/retry-go/v4"
+	"strings"
 	"time"
 )
 
@@ -18,3 +19,7 @@ var (
 	RtyDelay  = retry.Delay(time.Millisecond * 500)
 	RtyErr    = retry.LastErrorOnly(true)
 )
+
+func escape(raw string) string {
+	return strings.ReplaceAll(raw, "'", "\\'")
+}
