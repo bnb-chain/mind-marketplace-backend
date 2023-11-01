@@ -253,8 +253,8 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 		return rawSql, err
 	}
 
-	return fmt.Sprintf("update items set description = '%s', url = '%s', price = %s, updated_gnfd_height = %d where group_id = %d",
-		escape(extra.Desc), escape(extra.Url), extra.Price, blockHeight, updateGroupExtra.GroupId.Uint64()), nil
+	return fmt.Sprintf("update items set description = '%s', url = '%s',updated_gnfd_height = %d where group_id = %d",
+		escape(extra.Desc), escape(extra.Url), blockHeight, updateGroupExtra.GroupId.Uint64()), nil
 }
 
 func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abciTypes.Event) (string, error) {
