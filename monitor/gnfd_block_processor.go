@@ -213,7 +213,7 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 	return fmt.Sprintf("insert into items (group_id, group_name, name, owner_address, status, description, url, price, listed_at, created_gnfd_height)"+
 		" values (%d, '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d)",
 		createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
-		database.ItemPending, extra.Desc, extra.Url, extra.Price, block.Time.Unix(), blockHeight), nil
+		database.ItemPending, escape(extra.Desc), escape(extra.Url), extra.Price, block.Time.Unix(), blockHeight), nil
 }
 
 // for cross-chain created group, this could be useless
@@ -254,7 +254,7 @@ func (p *GnfdBlockProcessor) handleEventUpdateGroupExtra(blockHeight uint64, eve
 	}
 
 	return fmt.Sprintf("update items set description = '%s', url = '%s', price = %s, updated_gnfd_height = %d where group_id = %d",
-		extra.Desc, extra.Url, extra.Price, blockHeight, updateGroupExtra.GroupId.Uint64()), nil
+		escape(extra.Desc), escape(extra.Url), extra.Price, blockHeight, updateGroupExtra.GroupId.Uint64()), nil
 }
 
 func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abciTypes.Event) (string, error) {
