@@ -187,6 +187,13 @@ func (p *BscBlockProcessor) handleEventList(blockHeight uint64, l types.Log) (st
 		return "", nil
 	}
 
+	// item should be existed
+	_, err = p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), true)
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to find item %d err: %s", p.Name(), event.GroupId.Int64(), err)
+		return "", err
+	}
+
 	rawSql := fmt.Sprintf("update items set status = %d, price = %s, updated_bsc_height = %d where group_id = %d ",
 		database.ItemListed, event.Price, blockHeight, event.GroupId)
 
@@ -201,6 +208,13 @@ func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) (
 	}
 	if event == nil {
 		return "", nil
+	}
+
+	// item should be existed
+	_, err = p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), true)
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to find item %d err: %s", p.Name(), event.GroupId.Int64(), err)
+		return "", err
 	}
 
 	rawSql := fmt.Sprintf("update items set status = %d, updated_bsc_height = %d where group_id = %d ",
