@@ -11,11 +11,17 @@ type Extra struct {
 	Price decimal.Decimal `json:"price"`
 }
 
+// If there is wrong format extra, we just ignore the error and use default values.
+// https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org/block_results?height=1658808
 func parseExtra(str string) (*Extra, error) {
 	var extra Extra
 	err := json.Unmarshal([]byte(str), &extra)
 	if err != nil {
-		return nil, err
+		return &Extra{
+			Desc:  "",
+			Url:   "",
+			Price: decimal.Zero,
+		}, nil
 	}
 
 	return &extra, nil
