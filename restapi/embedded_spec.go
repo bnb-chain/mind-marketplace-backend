@@ -382,6 +382,11 @@ func init() {
           "type": "string",
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "avatar": {
+          "description": "avatar url",
+          "type": "string",
+          "example": "https://greengfield.sp.com/mypublicbucket/avatar.jpg"
+        },
         "createdAt": {
           "description": "create at,unix timestamp",
           "type": "integer",
@@ -413,6 +418,11 @@ func init() {
           "description": "whether twitter account is verified",
           "type": "boolean",
           "example": "true"
+        },
+        "userName": {
+          "description": "user name",
+          "type": "string",
+          "example": "jack"
         }
       }
     },
@@ -889,6 +899,12 @@ func init() {
           "type": "string",
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "avatar": {
+          "description": "url of avatar",
+          "type": "string",
+          "maxLength": 256,
+          "example": "https://www.xxx.xyz/abc.jpg"
+        },
         "bio": {
           "description": "self description",
           "type": "string",
@@ -903,7 +919,7 @@ func init() {
           "example": "justdoit"
         },
         "signature": {
-          "description": "signature, format ` + "`" + `{accountName}_update_account_{timestamp}` + "`" + `, signed with account seed",
+          "description": "signed signature, format ` + "`" + `{address}_update_account_{timestamp}` + "`" + `, for more: https://docs.metamask.io/wallet/how-to/sign-data/",
           "type": "string",
           "example": "b6c68a22f98c5f37347f7e2d4dc6ee48df31d5b86ef123d984969432f14c9a970283a157ef260b6341215b76764a1d5d4b29379fc50359164b53c2ce16d4cbd7"
         },
@@ -918,6 +934,12 @@ func init() {
           "maxLength": 256,
           "minLength": 3,
           "example": "jsutdoit"
+        },
+        "userName": {
+          "description": "user name",
+          "type": "string",
+          "maxLength": 32,
+          "example": "jack"
         }
       }
     }
@@ -1313,6 +1335,11 @@ func init() {
           "type": "string",
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "avatar": {
+          "description": "avatar url",
+          "type": "string",
+          "example": "https://greengfield.sp.com/mypublicbucket/avatar.jpg"
+        },
         "createdAt": {
           "description": "create at,unix timestamp",
           "type": "integer",
@@ -1344,6 +1371,11 @@ func init() {
           "description": "whether twitter account is verified",
           "type": "boolean",
           "example": "true"
+        },
+        "userName": {
+          "description": "user name",
+          "type": "string",
+          "example": "jack"
         }
       }
     },
@@ -1899,6 +1931,13 @@ func init() {
           "type": "string",
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "avatar": {
+          "description": "url of avatar",
+          "type": "string",
+          "maxLength": 256,
+          "minLength": 0,
+          "example": "https://www.xxx.xyz/abc.jpg"
+        },
         "bio": {
           "description": "self description",
           "type": "string",
@@ -1914,7 +1953,7 @@ func init() {
           "example": "justdoit"
         },
         "signature": {
-          "description": "signature, format ` + "`" + `{accountName}_update_account_{timestamp}` + "`" + `, signed with account seed",
+          "description": "signed signature, format ` + "`" + `{address}_update_account_{timestamp}` + "`" + `, for more: https://docs.metamask.io/wallet/how-to/sign-data/",
           "type": "string",
           "example": "b6c68a22f98c5f37347f7e2d4dc6ee48df31d5b86ef123d984969432f14c9a970283a157ef260b6341215b76764a1d5d4b29379fc50359164b53c2ce16d4cbd7"
         },
@@ -1929,6 +1968,13 @@ func init() {
           "maxLength": 256,
           "minLength": 3,
           "example": "jsutdoit"
+        },
+        "userName": {
+          "description": "user name",
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 0,
+          "example": "jack"
         }
       }
     }

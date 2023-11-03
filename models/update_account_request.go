@@ -24,6 +24,12 @@ type UpdateAccountRequest struct {
 	// Required: true
 	Address *string `json:"address"`
 
+	// url of avatar
+	// Example: https://www.xxx.xyz/abc.jpg
+	// Max Length: 256
+	// Min Length: 0
+	Avatar *string `json:"avatar,omitempty"`
+
 	// self description
 	// Example: interested in web3
 	// Max Length: 1024
@@ -36,7 +42,7 @@ type UpdateAccountRequest struct {
 	// Min Length: 3
 	InstagramUserName string `json:"instagramUserName,omitempty"`
 
-	// signature, format `{accountName}_update_account_{timestamp}`, signed with account seed
+	// signed signature, format `{address}_update_account_{timestamp}`, for more: https://docs.metamask.io/wallet/how-to/sign-data/
 	// Example: b6c68a22f98c5f37347f7e2d4dc6ee48df31d5b86ef123d984969432f14c9a970283a157ef260b6341215b76764a1d5d4b29379fc50359164b53c2ce16d4cbd7
 	// Required: true
 	Signature *string `json:"signature"`
@@ -51,6 +57,12 @@ type UpdateAccountRequest struct {
 	// Max Length: 256
 	// Min Length: 3
 	TwitterUserName string `json:"twitterUserName,omitempty"`
+
+	// user name
+	// Example: jack
+	// Max Length: 32
+	// Min Length: 0
+	UserName *string `json:"userName,omitempty"`
 }
 
 // Validate validates this update account request
@@ -58,6 +70,10 @@ func (m *UpdateAccountRequest) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAddress(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAvatar(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -81,6 +97,10 @@ func (m *UpdateAccountRequest) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateUserName(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -90,6 +110,22 @@ func (m *UpdateAccountRequest) Validate(formats strfmt.Registry) error {
 func (m *UpdateAccountRequest) validateAddress(formats strfmt.Registry) error {
 
 	if err := validate.Required("address", "body", m.Address); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UpdateAccountRequest) validateAvatar(formats strfmt.Registry) error {
+	if swag.IsZero(m.Avatar) { // not required
+		return nil
+	}
+
+	if err := validate.MinLength("avatar", "body", *m.Avatar, 0); err != nil {
+		return err
+	}
+
+	if err := validate.MaxLength("avatar", "body", *m.Avatar, 256); err != nil {
 		return err
 	}
 
@@ -156,6 +192,22 @@ func (m *UpdateAccountRequest) validateTwitterUserName(formats strfmt.Registry) 
 	}
 
 	if err := validate.MaxLength("twitterUserName", "body", m.TwitterUserName, 256); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UpdateAccountRequest) validateUserName(formats strfmt.Registry) error {
+	if swag.IsZero(m.UserName) { // not required
+		return nil
+	}
+
+	if err := validate.MinLength("userName", "body", *m.UserName, 0); err != nil {
+		return err
+	}
+
+	if err := validate.MaxLength("userName", "body", *m.UserName, 32); err != nil {
 		return err
 	}
 

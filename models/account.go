@@ -24,6 +24,10 @@ type Account struct {
 	// Required: true
 	Address *string `json:"address"`
 
+	// avatar url
+	// Example: https://greengfield.sp.com/mypublicbucket/avatar.jpg
+	Avatar string `json:"avatar,omitempty"`
+
 	// create at,unix timestamp
 	// Example: 1654171400
 	CreatedAt int64 `json:"createdAt,omitempty"`
@@ -48,6 +52,10 @@ type Account struct {
 	// whether twitter account is verified
 	// Example: true
 	TwitterVerified bool `json:"twitterVerified,omitempty"`
+
+	// user name
+	// Example: jack
+	UserName string `json:"userName,omitempty"`
 }
 
 // Validate validates this account

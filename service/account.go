@@ -64,6 +64,19 @@ func (s *AccountService) Update(context context.Context, request *models.UpdateA
 	//todo: verify signature
 
 	if needCreate {
+		userName := ""
+		if request.UserName != nil {
+			userName = *request.UserName
+		}
+		err = s.verifyUserName(context, userName)
+		if err != nil {
+			return nil, err
+		}
+
+		avatar := ""
+		if request.Avatar != nil {
+			avatar = *request.Avatar
+		}
 		bio := ""
 		if request.Bio != nil {
 			bio = *request.Bio
@@ -71,6 +84,8 @@ func (s *AccountService) Update(context context.Context, request *models.UpdateA
 		//save to database
 		record := database.Account{
 			Address:           *request.Address,
+			UserName:          userName,
+			Avatar:            avatar,
 			Bio:               bio,
 			TwitterUserName:   request.TwitterUserName,
 			InstagramUserName: request.InstagramUserName,
@@ -85,6 +100,9 @@ func (s *AccountService) Update(context context.Context, request *models.UpdateA
 		if request.Bio != nil && *request.Bio != "" {
 			existed.Bio = *request.Bio
 		}
+		if request.Avatar != nil && *request.Avatar != "" {
+			existed.Avatar = *request.Avatar
+		}
 		if request.TwitterUserName != "" {
 			existed.TwitterUserName = request.TwitterUserName
 		}
@@ -97,4 +115,18 @@ func (s *AccountService) Update(context context.Context, request *models.UpdateA
 		}
 	}
 	return convertAccount(existed), nil
+}
+
+func (s *AccountService) verifyUserName(context context.Context, userName string) error {
+	if userName == "" {
+		return EmptyUserNameErr
+	}
+	_, err := s.accountDao.GetByUserName(context, userName)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("fail to read account from database")
+	}
+	if err == nil {
+		return ExistedUserNameErr
+	}
+	return nil
 }

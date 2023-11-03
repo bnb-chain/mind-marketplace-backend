@@ -289,6 +289,14 @@ definitions:
         type: string
         description: "account address"
         example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+      userName:
+        type: string
+        description: "user name"
+        example: "jack"
+      avatar:
+        type: string
+        description: "avatar url"
+        example: "https://greengfield.sp.com/mypublicbucket/avatar.jpg"
       twitterUserName:
         type: string
         description: "twitter user name"
@@ -340,6 +348,18 @@ definitions:
         type: string
         description: "account address"
         example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+      userName:
+        type: string
+        description: "user name"
+        example: "jack"
+        minLength: 0
+        maxLength: 32
+      avatar:
+        type: string
+        description: "url of avatar"
+        example: "https://www.xxx.xyz/abc.jpg"
+        minLength: 0
+        maxLength: 256
       bio:
         type: string
         description: "self description"
