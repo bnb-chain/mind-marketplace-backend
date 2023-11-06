@@ -14,6 +14,7 @@ import (
 type Account interface {
 	Get(context context.Context, address string) (*models.Account, error)
 	Update(context context.Context, request *models.UpdateAccountRequest) (*models.Account, error)
+	VerifyTwitter(context context.Context, address, twitterUserName string) (*models.Account, error)
 }
 
 type AccountService struct {
@@ -129,4 +130,28 @@ func (s *AccountService) verifyUserName(context context.Context, userName string
 		return ExistedUserNameErr
 	}
 	return nil
+}
+
+func (s *AccountService) VerifyTwitter(context context.Context, address, twitterUserName string) (*models.Account, error) {
+	if err := validateAddress(address); err != nil {
+		return nil, err
+	}
+
+	account, err := s.accountDao.GetByAddress(context, address)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, NotFoundErr
+		} else {
+			return nil, fmt.Errorf("fail to read account from database")
+		}
+	}
+
+	account.TwitterUserName = twitterUserName
+	account.TwitterVerified = true
+
+	err = s.accountDao.Update(context, &account)
+	if err != nil {
+		return nil, err
+	}
+	return convertAccount(account), nil
 }
