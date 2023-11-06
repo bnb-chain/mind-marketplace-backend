@@ -1,4 +1,4 @@
-insert into categories(id, name) values (0, 'Uncategorized');
+insert into categories(id, name) values (100, 'Uncategorized');
 insert into categories(id, name) values (1, 'AI Model');
 insert into categories(id, name) values (2, 'Code Resource');
 insert into categories(id, name) values (3, 'Digital Media');
