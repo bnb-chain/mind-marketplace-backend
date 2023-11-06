@@ -4,7 +4,6 @@ package restapi
 
 import (
 	"crypto/tls"
-	"fmt"
 	"github.com/bnb-chain/mind-marketplace-backend/dao"
 	"github.com/bnb-chain/mind-marketplace-backend/database"
 	"github.com/bnb-chain/mind-marketplace-backend/restapi/handlers"
@@ -53,8 +52,6 @@ func configureAPI(api *operations.MindMarketplaceAPI) http.Handler {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		http.HandleFunc("/v1/twitter_verify", twitter.RedirectUserToTwitter)
-		http.HandleFunc("/v1/twitter_token", twitter.GetTwitterToken)
 		util.Logger.Fatal(http.ListenAndServe(":9292", nil))
 	}()
 
@@ -114,21 +111,20 @@ func configureServer(s *http.Server, scheme, addr string) {
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation.
 func setupMiddlewares(handler http.Handler) http.Handler {
-	return mountTwitterOauth(handler)
+	return handler
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics.
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
 	config := util.ParseServerConfigFromFile(cliOpts.ConfigFilePath)
-	return handlers.SetupHandler(handler, "mind-marketplace", config)
+	return mountTwitterOauth(handlers.SetupHandler(handler, "mind-marketplace", config))
 }
 
 func mountTwitterOauth(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.URL.Path)
 		if r.URL.Path == "/v1/twitter_verify" {
-			twitter.RedirectUserToTwitter(w, r)
+			twitter.RedirectToTwitter(w, r)
 			return
 		} else if r.URL.Path == "/v1/twitter_token" {
 			twitter.GetTwitterToken(w, r)

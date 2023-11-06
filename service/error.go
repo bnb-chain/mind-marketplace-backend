@@ -34,6 +34,10 @@ var (
 	InvalidSigErr       = Err{3030, "invalid signature"}
 	InvalidTimestampErr = Err{3040, "invalid timestamp"}
 
+	IncorrectAddressErr = Err{3100, "incorrect address for twitter verify"}
+	CannotRedirectErr   = Err{3110, "cannot redirect to twitter"}
+	TwitterAuthErr      = Err{3120, "auth error on twitter"}
+
 	InvalidKeywordErr = Err{Code: 3500, Message: "invalid keyword, too short"}
 	TooBigLimitErr    = Err{Code: 3600, Message: "limit is too big"}
 

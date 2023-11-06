@@ -1,7 +1,7 @@
 package twitter
 
 import (
-	"fmt"
+	"github.com/bnb-chain/mind-marketplace-backend/util"
 	tt "github.com/kkdai/twitter"
 	"os"
 )
@@ -27,9 +27,10 @@ func init() {
 
 	// test purpose
 	if CallbackURL == "" {
-		CallbackURL = "http://www.localhost:9292/v1/twitter_token"
+		CallbackURL = "http://www.localhost:8080/v1/twitter_token"
 	}
 
-	fmt.Println("[app] Init server key=", ConsumerKey, " secret=", ConsumerSecret)
+	util.Logger.Info("Init server key=", ConsumerKey, " secret=", ConsumerSecret,
+		" callback=", CallbackURL)
 	twitterClient = tt.NewServerClient(ConsumerKey, ConsumerSecret)
 }
