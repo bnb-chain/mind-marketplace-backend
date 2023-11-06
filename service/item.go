@@ -84,7 +84,7 @@ func (s *ItemService) Search(context context.Context, request *models.SearchItem
 		return 0, nil, TooBigLimitErr
 	}
 
-	total, items, err := s.itemDao.Search(context, address, keyword, false, sort, offset, limit)
+	total, items, err := s.itemDao.Search(context, request.Filter.CategoryID, address, keyword, false, sort, offset, limit)
 	if err != nil {
 		return 0, nil, fmt.Errorf("fail to search item")
 	}

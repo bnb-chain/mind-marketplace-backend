@@ -11,6 +11,7 @@ type AccountDao interface {
 	Create(context context.Context, account *database.Account) error
 	Get(context context.Context, id int64) (database.Account, error)
 	GetByAddress(context context.Context, address string) (database.Account, error)
+	GetByUserName(context context.Context, userName string) (database.Account, error)
 	Update(context context.Context, account *database.Account) error
 }
 
@@ -43,6 +44,15 @@ func (dao *dbAccountDao) GetByAddress(context context.Context, address string) (
 	var account database.Account
 
 	if err := dao.db.Where(&database.Account{Address: address}).Take(&account).Error; err != nil {
+		return account, err
+	}
+	return account, nil
+}
+
+func (dao *dbAccountDao) GetByUserName(context context.Context, userName string) (database.Account, error) {
+	var account database.Account
+
+	if err := dao.db.Where(&database.Account{UserName: userName}).Take(&account).Error; err != nil {
 		return account, err
 	}
 	return account, nil

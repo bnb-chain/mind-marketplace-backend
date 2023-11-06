@@ -36,6 +36,9 @@ func ConnectDBWithConfig(config *util.DBConfig) (*gorm.DB, error) {
 		if err = db.AutoMigrate(&Account{}); err != nil {
 			panic(err)
 		}
+		if err = db.AutoMigrate(&Category{}); err != nil {
+			panic(err)
+		}
 		if err = db.AutoMigrate(&Item{}); err != nil {
 			panic(err)
 		}

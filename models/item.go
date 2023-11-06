@@ -21,6 +21,10 @@ import (
 // swagger:model Item
 type Item struct {
 
+	// category id
+	// Example: 1
+	CategoryID int64 `json:"categoryId,omitempty"`
+
 	// create at, unix timestamp
 	// Example: 1654173249
 	CreatedAt int64 `json:"createdAt,omitempty"`

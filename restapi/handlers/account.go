@@ -23,10 +23,9 @@ func HandleGetAccount() func(params account.GetAccountParams) middleware.Respond
 	}
 }
 
-/*
 func HandleUpdateAccount() func(request account.UpdateAccountParams) middleware.Responder {
 	return func(params account.UpdateAccountParams) middleware.Responder {
-		context := params.HTTPRequest.Context().Value(ctx.ContextKey).(ctx.CTX)
+		context := params.HTTPRequest.Context()
 		response, err := service.AccountSvc.Update(context, params.Body)
 		code, message := Error(err)
 		payload := models.AccountResponse{
@@ -38,4 +37,3 @@ func HandleUpdateAccount() func(request account.UpdateAccountParams) middleware.
 		return account.NewUpdateAccountOK().WithPayload(&payload)
 	}
 }
-*/

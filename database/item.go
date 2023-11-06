@@ -24,6 +24,7 @@ const (
 
 type Item struct {
 	Id                int64           `json:"id" gorm:"primaryKey"`
+	CategoryId        int64           `json:"category_id"`
 	Type              int8            `json:"type"`                                              // collection (bucket) or data (object)
 	Name              string          `json:"name" gorm:"index:idx_item_name;not null;size:256"` // bucket name or object name
 	ResourceId        int64           `json:"resource_id" gorm:"index:idx_item_resource_id"`     // bucket id or object id

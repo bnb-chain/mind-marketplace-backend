@@ -24,6 +24,10 @@ type ItemFilter struct {
 	// Min Length: 1
 	Address string `json:"address,omitempty"`
 
+	// id of category
+	// Example: 1
+	CategoryID int64 `json:"categoryId,omitempty"`
+
 	// search keyword
 	// Example: panda
 	// Min Length: 1

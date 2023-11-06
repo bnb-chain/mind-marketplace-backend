@@ -49,6 +49,9 @@ func NewMindMarketplaceAPI(spec *loads.Document) *MindMarketplaceAPI {
 		AccountGetAccountHandler: account.GetAccountHandlerFunc(func(params account.GetAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation account.GetAccount has not yet been implemented")
 		}),
+		ItemGetCategoryHandler: item.GetCategoryHandlerFunc(func(params item.GetCategoryParams) middleware.Responder {
+			return middleware.NotImplemented("operation item.GetCategory has not yet been implemented")
+		}),
 		ItemGetItemHandler: item.GetItemHandlerFunc(func(params item.GetItemParams) middleware.Responder {
 			return middleware.NotImplemented("operation item.GetItem has not yet been implemented")
 		}),
@@ -63,6 +66,9 @@ func NewMindMarketplaceAPI(spec *loads.Document) *MindMarketplaceAPI {
 		}),
 		PurchaseSearchPurchaseHandler: purchase.SearchPurchaseHandlerFunc(func(params purchase.SearchPurchaseParams) middleware.Responder {
 			return middleware.NotImplemented("operation purchase.SearchPurchase has not yet been implemented")
+		}),
+		AccountUpdateAccountHandler: account.UpdateAccountHandlerFunc(func(params account.UpdateAccountParams) middleware.Responder {
+			return middleware.NotImplemented("operation account.UpdateAccount has not yet been implemented")
 		}),
 	}
 }
@@ -102,6 +108,8 @@ type MindMarketplaceAPI struct {
 
 	// AccountGetAccountHandler sets the operation handler for the get account operation
 	AccountGetAccountHandler account.GetAccountHandler
+	// ItemGetCategoryHandler sets the operation handler for the get category operation
+	ItemGetCategoryHandler item.GetCategoryHandler
 	// ItemGetItemHandler sets the operation handler for the get item operation
 	ItemGetItemHandler item.GetItemHandler
 	// ItemGetItemByGroupHandler sets the operation handler for the get item by group operation
@@ -112,6 +120,8 @@ type MindMarketplaceAPI struct {
 	ItemSearchItemHandler item.SearchItemHandler
 	// PurchaseSearchPurchaseHandler sets the operation handler for the search purchase operation
 	PurchaseSearchPurchaseHandler purchase.SearchPurchaseHandler
+	// AccountUpdateAccountHandler sets the operation handler for the update account operation
+	AccountUpdateAccountHandler account.UpdateAccountHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -192,6 +202,9 @@ func (o *MindMarketplaceAPI) Validate() error {
 	if o.AccountGetAccountHandler == nil {
 		unregistered = append(unregistered, "account.GetAccountHandler")
 	}
+	if o.ItemGetCategoryHandler == nil {
+		unregistered = append(unregistered, "item.GetCategoryHandler")
+	}
 	if o.ItemGetItemHandler == nil {
 		unregistered = append(unregistered, "item.GetItemHandler")
 	}
@@ -206,6 +219,9 @@ func (o *MindMarketplaceAPI) Validate() error {
 	}
 	if o.PurchaseSearchPurchaseHandler == nil {
 		unregistered = append(unregistered, "purchase.SearchPurchaseHandler")
+	}
+	if o.AccountUpdateAccountHandler == nil {
+		unregistered = append(unregistered, "account.UpdateAccountHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -302,6 +318,10 @@ func (o *MindMarketplaceAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/item/categories"] = item.NewGetCategory(o.context, o.ItemGetCategoryHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/item/{itemId}"] = item.NewGetItem(o.context, o.ItemGetItemHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -319,6 +339,10 @@ func (o *MindMarketplaceAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/purchase/search"] = purchase.NewSearchPurchase(o.context, o.PurchaseSearchPurchaseHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/account/update"] = account.NewUpdateAccount(o.context, o.AccountUpdateAccountHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

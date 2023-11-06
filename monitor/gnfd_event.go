@@ -6,9 +6,10 @@ import (
 )
 
 type Extra struct {
-	Desc  string          `json:"desc"`
-	Url   string          `json:"url"`
-	Price decimal.Decimal `json:"price"`
+	Category string          `json:"category"`
+	Desc     string          `json:"desc"`
+	Url      string          `json:"url"`
+	Price    decimal.Decimal `json:"price"`
 }
 
 // If there is wrong format extra, we just ignore the error and use default values.

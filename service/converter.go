@@ -19,6 +19,14 @@ func convertAccount(account database.Account) *models.Account {
 	}
 }
 
+func convertCategory(category database.Category) *models.Category {
+	id := category.Id
+	return &models.Category{
+		ID:   &id,
+		Name: &category.Name,
+	}
+}
+
 func convertItem(item database.Item) *models.Item {
 	id := item.Id
 	typ := formatItemType(database.ItemType(item.Type))
@@ -33,6 +41,7 @@ func convertItem(item database.Item) *models.Item {
 		URL:          item.Url,
 		Price:        util.Decimal(item.Price),
 		OwnerAddress: item.OwnerAddress,
+		CategoryID:   item.CategoryId,
 	}
 
 	if item.Stats != nil {

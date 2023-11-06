@@ -8,6 +8,21 @@ import (
 	"github.com/bnb-chain/mind-marketplace-backend/service"
 )
 
+func HandleGetAllCategory() func(params item.GetCategoryParams) middleware.Responder {
+	return func(params item.GetCategoryParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		response, err := service.CategorySvc.GetAll(context)
+		code, message := Error(err)
+		payload := models.ListCategoryResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.ListCategoryResponseData{Categories: response}
+		}
+		return item.NewGetCategoryOK().WithPayload(&payload)
+	}
+}
+
 func HandleGetItem() func(params item.GetItemParams) middleware.Responder {
 	return func(params item.GetItemParams) middleware.Responder {
 		context := params.HTTPRequest.Context()
