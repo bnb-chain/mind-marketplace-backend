@@ -22,7 +22,7 @@ type ItemDao interface {
 	Update(context context.Context, collection *database.Item) error
 	Get(context context.Context, id int64, includeAll bool) (database.Item, error)
 	GetByGroupId(context context.Context, groupId int64, includeAll bool) (database.Item, error)
-	Search(context context.Context, address, keyword string, includeAll bool, sort string, offset, limit int) (int64, []*database.Item, error)
+	Search(context context.Context, categoryId int64, address, keyword string, includeAll bool, sort string, offset, limit int) (int64, []*database.Item, error)
 }
 
 type dbItemDao struct {
@@ -97,9 +97,14 @@ func (dao *dbItemDao) GetByGroupId(context context.Context, groupId int64, inclu
 	return item, nil
 }
 
-func (dao *dbItemDao) Search(context context.Context, address, keyword string, includeAll bool, sort string, offset, limit int) (total int64, items []*database.Item, err error) {
+func (dao *dbItemDao) Search(context context.Context, categoryId int64, address, keyword string, includeAll bool, sort string, offset, limit int) (total int64, items []*database.Item, err error) {
 	rawSql := " where 1 = 1 "
 	parameters := make([]interface{}, 0)
+
+	if categoryId > 0 {
+		rawSql = rawSql + ` and category_id = ?`
+		parameters = append(parameters, categoryId)
+	}
 
 	if len(address) > 0 {
 		rawSql = rawSql + ` and owner_address = ?`

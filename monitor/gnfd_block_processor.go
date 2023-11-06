@@ -21,7 +21,7 @@ import (
 )
 
 // unknownCategoryId defines the id of unknown category in database
-const unknownCategoryId = int64(0)
+const unknownCategoryId = int64(100)
 
 type GnfdBlockProcessor struct {
 	client       *GnfdCompositeClients
