@@ -14,41 +14,41 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// NewGetItemByGroupParams creates a new GetItemByGroupParams object
+// NewGetItemByBucketParams creates a new GetItemByBucketParams object
 //
 // There are no default values defined in the spec.
-func NewGetItemByGroupParams() GetItemByGroupParams {
+func NewGetItemByBucketParams() GetItemByBucketParams {
 
-	return GetItemByGroupParams{}
+	return GetItemByBucketParams{}
 }
 
-// GetItemByGroupParams contains all the bound params for the get item by group operation
+// GetItemByBucketParams contains all the bound params for the get item by bucket operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters getItemByGroup
-type GetItemByGroupParams struct {
+// swagger:parameters getItemByBucket
+type GetItemByBucketParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*group id
+	/*bucket id
 	  Required: true
 	  In: path
 	*/
-	GroupID int64
+	BucketID int64
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewGetItemByGroupParams() beforehand.
-func (o *GetItemByGroupParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewGetItemByBucketParams() beforehand.
+func (o *GetItemByBucketParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
 
-	rGroupID, rhkGroupID, _ := route.Params.GetOK("groupId")
-	if err := o.bindGroupID(rGroupID, rhkGroupID, route.Formats); err != nil {
+	rBucketID, rhkBucketID, _ := route.Params.GetOK("bucketId")
+	if err := o.bindBucketID(rBucketID, rhkBucketID, route.Formats); err != nil {
 		res = append(res, err)
 	}
 	if len(res) > 0 {
@@ -57,8 +57,8 @@ func (o *GetItemByGroupParams) BindRequest(r *http.Request, route *middleware.Ma
 	return nil
 }
 
-// bindGroupID binds and validates parameter GroupID from path.
-func (o *GetItemByGroupParams) bindGroupID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+// bindBucketID binds and validates parameter BucketID from path.
+func (o *GetItemByBucketParams) bindBucketID(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
@@ -69,9 +69,9 @@ func (o *GetItemByGroupParams) bindGroupID(rawData []string, hasKey bool, format
 
 	value, err := swag.ConvertInt64(raw)
 	if err != nil {
-		return errors.InvalidType("groupId", "path", "int64", raw)
+		return errors.InvalidType("bucketId", "path", "int64", raw)
 	}
-	o.GroupID = value
+	o.BucketID = value
 
 	return nil
 }

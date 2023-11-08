@@ -103,7 +103,7 @@ func configureServer(s *http.Server, scheme, addr string) {
 	service.AccountSvc = service.NewAccountService(accountDao)
 	service.ItemSvc = service.NewItemService(itemDao)
 	service.CategorySvc = service.NewCategoryService(categoryDao)
-	service.PurchaseSvc = service.NewPurchaseService(purchaseDao)
+	service.PurchaseSvc = service.NewPurchaseService(purchaseDao, itemDao)
 
 }
 

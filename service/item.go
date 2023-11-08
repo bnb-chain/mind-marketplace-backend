@@ -11,6 +11,8 @@ import (
 type Item interface {
 	Get(context context.Context, id int64) (*models.Item, error)
 	GetByGroup(context context.Context, groupId int64) (*models.Item, error)
+	GetByBucket(context context.Context, bucketId int64) (*models.Item, error)
+	GetByObject(context context.Context, objectId int64) (*models.Item, error)
 	Search(context context.Context, request *models.SearchItemRequest) (int64, []*models.Item, error)
 }
 
@@ -39,6 +41,32 @@ func (s *ItemService) Get(context context.Context, id int64) (*models.Item, erro
 
 func (s *ItemService) GetByGroup(context context.Context, groupId int64) (*models.Item, error) {
 	item, err := s.itemDao.GetByGroupId(context, groupId, false)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, NotFoundErr
+		} else {
+			return nil, fmt.Errorf("fail to get item")
+		}
+	}
+
+	return convertItem(item), nil
+}
+
+func (s *ItemService) GetByBucket(context context.Context, bucketId int64) (*models.Item, error) {
+	item, err := s.itemDao.GetByBucketId(context, bucketId, false)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, NotFoundErr
+		} else {
+			return nil, fmt.Errorf("fail to get item")
+		}
+	}
+
+	return convertItem(item), nil
+}
+
+func (s *ItemService) GetByObject(context context.Context, objectId int64) (*models.Item, error) {
+	item, err := s.itemDao.GetByObjectId(context, objectId, false)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, NotFoundErr
