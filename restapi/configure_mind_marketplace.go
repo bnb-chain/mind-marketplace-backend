@@ -63,6 +63,8 @@ func configureAPI(api *operations.MindMarketplaceAPI) http.Handler {
 	api.ItemGetCategoryHandler = item.GetCategoryHandlerFunc(handlers.HandleGetAllCategory())
 	api.ItemGetItemHandler = item.GetItemHandlerFunc(handlers.HandleGetItem())
 	api.ItemGetItemByGroupHandler = item.GetItemByGroupHandlerFunc(handlers.HandleGetItemByGroup())
+	api.ItemGetItemByBucketHandler = item.GetItemByBucketHandlerFunc(handlers.HandleGetItemByBucket())
+	api.ItemGetItemByObjectHandler = item.GetItemByObjectHandlerFunc(handlers.HandleGetItemByObject())
 	api.ItemSearchItemHandler = item.SearchItemHandlerFunc(handlers.HandleSearchItem())
 
 	api.PurchaseGetPurchaseHandler = purchase.GetPurchaseHandlerFunc(handlers.HandleGetPurchase())
@@ -103,7 +105,7 @@ func configureServer(s *http.Server, scheme, addr string) {
 	service.AccountSvc = service.NewAccountService(accountDao)
 	service.ItemSvc = service.NewItemService(itemDao)
 	service.CategorySvc = service.NewCategoryService(categoryDao)
-	service.PurchaseSvc = service.NewPurchaseService(purchaseDao)
+	service.PurchaseSvc = service.NewPurchaseService(purchaseDao, itemDao)
 
 }
 

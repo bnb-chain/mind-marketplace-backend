@@ -22,6 +22,8 @@ type ItemDao interface {
 	Update(context context.Context, collection *database.Item) error
 	Get(context context.Context, id int64, includeAll bool) (database.Item, error)
 	GetByGroupId(context context.Context, groupId int64, includeAll bool) (database.Item, error)
+	GetByBucketId(context context.Context, bucketId int64, includeAll bool) (database.Item, error)
+	GetByObjectId(context context.Context, objectId int64, includeAll bool) (database.Item, error)
 	Search(context context.Context, categoryId int64, address, keyword string, includeAll bool, sort string, offset, limit int) (int64, []*database.Item, error)
 }
 
@@ -91,6 +93,36 @@ func (dao *dbItemDao) GetByGroupId(context context.Context, groupId int64, inclu
 	} else {
 		if err := dao.db.Preload("Stats").Where("group_id = ? and status <> ? and status <> ?  and status <> ?",
 			groupId, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Take(&item).Error; err != nil {
+			return item, err
+		}
+	}
+	return item, nil
+}
+
+func (dao *dbItemDao) GetByBucketId(context context.Context, bucketId int64, includeAll bool) (database.Item, error) {
+	var item = database.Item{}
+	if includeAll {
+		if err := dao.db.Preload("Stats").Where("resource_id = ? and type = ?", bucketId, database.COLLECTION).Take(&item).Error; err != nil {
+			return item, err
+		}
+	} else {
+		if err := dao.db.Preload("Stats").Where("resource_id = ? and type = ? and status <> ? and status <> ?  and status <> ?",
+			bucketId, database.COLLECTION, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Take(&item).Error; err != nil {
+			return item, err
+		}
+	}
+	return item, nil
+}
+
+func (dao *dbItemDao) GetByObjectId(context context.Context, objectId int64, includeAll bool) (database.Item, error) {
+	var item = database.Item{}
+	if includeAll {
+		if err := dao.db.Preload("Stats").Where("resource_id = ? and type = ?", objectId, database.OBJECT).Take(&item).Error; err != nil {
+			return item, err
+		}
+	} else {
+		if err := dao.db.Preload("Stats").Where("resource_id = ? and type = ? and status <> ? and status <> ?  and status <> ?",
+			objectId, database.OBJECT, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Take(&item).Error; err != nil {
 			return item, err
 		}
 	}

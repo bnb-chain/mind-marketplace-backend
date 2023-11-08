@@ -16,11 +16,13 @@ type Purchase interface {
 
 type PurchaseService struct {
 	purchaseDao dao.PurchaseDao
+	itemDao     dao.ItemDao
 }
 
-func NewPurchaseService(purchaseDao dao.PurchaseDao) Purchase {
+func NewPurchaseService(purchaseDao dao.PurchaseDao, itemDao dao.ItemDao) Purchase {
 	return &PurchaseService{
 		purchaseDao: purchaseDao,
+		itemDao:     itemDao,
 	}
 }
 
@@ -38,10 +40,12 @@ func (s *PurchaseService) Get(context context.Context, id int64) (*models.Purcha
 }
 
 func (s *PurchaseService) Search(context context.Context, request *models.SearchPurchaseRequest) (int64, []*models.Purchase, error) {
-	itemId := int64(0)
+	itemId, bucketId, objectId := int64(0), int64(0), int64(0)
 	address := ""
 	if request.Filter != nil {
 		itemId = request.Filter.ItemID
+		bucketId = request.Filter.BucketID
+		objectId = request.Filter.ObjectID
 		address = request.Filter.Address
 	}
 
@@ -65,6 +69,16 @@ func (s *PurchaseService) Search(context context.Context, request *models.Search
 	}
 	if limit > maxSearchLimit {
 		return 0, nil, TooBigLimitErr
+	}
+
+	if itemId <= 0 { //item id is not provided
+		if bucketId > 0 { // bucket id is provided
+			item, _ := s.itemDao.GetByBucketId(context, bucketId, true)
+			itemId = item.Id
+		} else if objectId > 0 { // object id is provided
+			item, _ := s.itemDao.GetByObjectId(context, objectId, true)
+			itemId = item.Id
+		}
 	}
 
 	total, purchases, err := s.purchaseDao.Search(context, itemId, address, sort, offset, limit)

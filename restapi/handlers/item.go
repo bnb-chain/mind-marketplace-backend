@@ -57,6 +57,40 @@ func HandleGetItemByGroup() func(params item.GetItemByGroupParams) middleware.Re
 	}
 }
 
+func HandleGetItemByBucket() func(params item.GetItemByBucketParams) middleware.Responder {
+	return func(params item.GetItemByBucketParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		response, err := service.ItemSvc.GetByBucket(context, params.BucketID)
+		code, message := Error(err)
+		payload := models.ItemResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.ItemResponseData{
+				Item: response,
+			}
+		}
+		return item.NewGetItemOK().WithPayload(&payload)
+	}
+}
+
+func HandleGetItemByObject() func(params item.GetItemByObjectParams) middleware.Responder {
+	return func(params item.GetItemByObjectParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		response, err := service.ItemSvc.GetByBucket(context, params.ObjectID)
+		code, message := Error(err)
+		payload := models.ItemResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.ItemResponseData{
+				Item: response,
+			}
+		}
+		return item.NewGetItemOK().WithPayload(&payload)
+	}
+}
+
 func HandleSearchItem() func(request item.SearchItemParams) middleware.Responder {
 	return func(params item.SearchItemParams) middleware.Responder {
 		context := params.HTTPRequest.Context()

@@ -237,6 +237,49 @@ func init() {
         }
       }
     },
+    "/item_by_bucket/{bucketId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get item by bucket",
+        "operationId": "getItemByBucket",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "integer",
+            "format": "int64",
+            "description": "bucket id",
+            "name": "bucketId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/item_by_group/{groupId}": {
       "get": {
         "produces": [
@@ -252,8 +295,51 @@ func init() {
             "minLength": 1,
             "type": "integer",
             "format": "int64",
-            "description": "group",
+            "description": "group id",
             "name": "groupId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/item_by_object/{objectId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get item by object",
+        "operationId": "getItemByObject",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "integer",
+            "format": "int64",
+            "description": "object id",
+            "name": "objectId",
             "in": "path",
             "required": true
           }
@@ -784,8 +870,20 @@ func init() {
           "minLength": 1,
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "bucketId": {
+          "description": "bucket id, the priority itemId \u003e bucketId \u003e objectId",
+          "type": "integer",
+          "minLength": 1,
+          "example": 100
+        },
         "itemId": {
-          "description": "item id",
+          "description": "item id, the priority itemId \u003e bucketId \u003e objectId",
+          "type": "integer",
+          "minLength": 1,
+          "example": 100
+        },
+        "objectId": {
+          "description": "object id, the priority itemId \u003e bucketId \u003e objectId",
           "type": "integer",
           "minLength": 1,
           "example": 100
@@ -1190,6 +1288,49 @@ func init() {
         }
       }
     },
+    "/item_by_bucket/{bucketId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get item by bucket",
+        "operationId": "getItemByBucket",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "integer",
+            "format": "int64",
+            "description": "bucket id",
+            "name": "bucketId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/item_by_group/{groupId}": {
       "get": {
         "produces": [
@@ -1205,8 +1346,51 @@ func init() {
             "minLength": 1,
             "type": "integer",
             "format": "int64",
-            "description": "group",
+            "description": "group id",
             "name": "groupId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/item_by_object/{objectId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get item by object",
+        "operationId": "getItemByObject",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "integer",
+            "format": "int64",
+            "description": "object id",
+            "name": "objectId",
             "in": "path",
             "required": true
           }
@@ -1805,8 +1989,20 @@ func init() {
           "minLength": 1,
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
+        "bucketId": {
+          "description": "bucket id, the priority itemId \u003e bucketId \u003e objectId",
+          "type": "integer",
+          "minLength": 1,
+          "example": 100
+        },
         "itemId": {
-          "description": "item id",
+          "description": "item id, the priority itemId \u003e bucketId \u003e objectId",
+          "type": "integer",
+          "minLength": 1,
+          "example": 100
+        },
+        "objectId": {
+          "description": "object id, the priority itemId \u003e bucketId \u003e objectId",
           "type": "integer",
           "minLength": 1,
           "example": 100

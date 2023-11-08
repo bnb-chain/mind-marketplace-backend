@@ -145,7 +145,7 @@ paths:
       parameters:
         - name: "groupId"
           in: "path"
-          description: "group"
+          description: "group id"
           required: true
           type: integer
           format: int64
@@ -163,6 +163,67 @@ paths:
           description: 'internal server error'
           schema:
             $ref: "#/definitions/Error"
+
+  /item_by_bucket/{bucketId}:
+    get:
+      tags:
+        - "item"
+      summary: "Get item by bucket"
+      operationId: "getItemByBucket"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "bucketId"
+          in: "path"
+          description: "bucket id"
+          required: true
+          type: integer
+          format: int64
+          minLength: 1
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+  /item_by_object/{objectId}:
+    get:
+      tags:
+        - "item"
+      summary: "Get item by object"
+      operationId: "getItemByObject"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "objectId"
+          in: "path"
+          description: "object id"
+          required: true
+          type: integer
+          format: int64
+          minLength: 1
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
 
   /item/search:
     post:
@@ -685,7 +746,17 @@ definitions:
         type: string
         minLength: 1
       itemId:
-        description: "item id"
+        description: "item id, the priority itemId > bucketId > objectId"
+        example: 100
+        type: integer
+        minLength: 1
+      bucketId:
+        description: "bucket id, the priority itemId > bucketId > objectId"
+        example: 100
+        type: integer
+        minLength: 1
+      objectId:
+        description: "object id, the priority itemId > bucketId > objectId"
         example: 100
         type: integer
         minLength: 1

@@ -24,9 +24,17 @@ type PurchaseFilter struct {
 	// Min Length: 1
 	Address string `json:"address,omitempty"`
 
-	// item id
+	// bucket id, the priority itemId > bucketId > objectId
+	// Example: 100
+	BucketID int64 `json:"bucketId,omitempty"`
+
+	// item id, the priority itemId > bucketId > objectId
 	// Example: 100
 	ItemID int64 `json:"itemId,omitempty"`
+
+	// object id, the priority itemId > bucketId > objectId
+	// Example: 100
+	ObjectID int64 `json:"objectId,omitempty"`
 }
 
 // Validate validates this purchase filter
