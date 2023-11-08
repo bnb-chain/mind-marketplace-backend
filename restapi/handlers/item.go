@@ -77,7 +77,7 @@ func HandleGetItemByBucket() func(params item.GetItemByBucketParams) middleware.
 func HandleGetItemByObject() func(params item.GetItemByObjectParams) middleware.Responder {
 	return func(params item.GetItemByObjectParams) middleware.Responder {
 		context := params.HTTPRequest.Context()
-		response, err := service.ItemSvc.GetByBucket(context, params.ObjectID)
+		response, err := service.ItemSvc.GetByObject(context, params.ObjectID)
 		code, message := Error(err)
 		payload := models.ItemResponse{
 			Code:    code,
