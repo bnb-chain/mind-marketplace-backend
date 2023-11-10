@@ -18,7 +18,7 @@ import (
 // swagger:model ItemResponse
 type ItemResponse struct {
 
-	// code defined by api,not equal to http code
+	// code defined by api, not equal to http code
 	// Example: 2000
 	Code int64 `json:"code,omitempty"`
 

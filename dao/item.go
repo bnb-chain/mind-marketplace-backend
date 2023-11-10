@@ -24,6 +24,7 @@ type ItemDao interface {
 	GetByGroupId(context context.Context, groupId int64, includeAll bool) (database.Item, error)
 	GetByBucketId(context context.Context, bucketId int64, includeAll bool) (database.Item, error)
 	GetByObjectId(context context.Context, objectId int64, includeAll bool) (database.Item, error)
+	Batch(context context.Context, ids []int64, includeAll bool) ([]database.Item, error)
 	Search(context context.Context, categoryId int64, address, keyword string, includeAll bool, sort string, offset, limit int) (int64, []*database.Item, error)
 }
 
@@ -127,6 +128,21 @@ func (dao *dbItemDao) GetByObjectId(context context.Context, objectId int64, inc
 		}
 	}
 	return item, nil
+}
+
+func (dao *dbItemDao) Batch(context context.Context, ids []int64, includeAll bool) ([]database.Item, error) {
+	items := make([]database.Item, 0)
+	if includeAll {
+		if err := dao.db.Preload("Stats").Where("id in ?", ids).Find(&items).Error; err != nil {
+			return items, err
+		}
+	} else {
+		if err := dao.db.Preload("Stats").Where("id in ? and status <> ? and status <> ? and status <> ?",
+			ids, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Find(&items).Error; err != nil {
+			return items, err
+		}
+	}
+	return items, nil
 }
 
 func (dao *dbItemDao) Search(context context.Context, categoryId int64, address, keyword string, includeAll bool, sort string, offset, limit int) (total int64, items []*database.Item, err error) {
