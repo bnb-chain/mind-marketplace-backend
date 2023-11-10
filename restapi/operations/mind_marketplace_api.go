@@ -46,6 +46,9 @@ func NewMindMarketplaceAPI(spec *loads.Document) *MindMarketplaceAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		ItemBatchItemHandler: item.BatchItemHandlerFunc(func(params item.BatchItemParams) middleware.Responder {
+			return middleware.NotImplemented("operation item.BatchItem has not yet been implemented")
+		}),
 		AccountGetAccountHandler: account.GetAccountHandlerFunc(func(params account.GetAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation account.GetAccount has not yet been implemented")
 		}),
@@ -112,6 +115,8 @@ type MindMarketplaceAPI struct {
 	//   - application/json
 	JSONProducer runtime.Producer
 
+	// ItemBatchItemHandler sets the operation handler for the batch item operation
+	ItemBatchItemHandler item.BatchItemHandler
 	// AccountGetAccountHandler sets the operation handler for the get account operation
 	AccountGetAccountHandler account.GetAccountHandler
 	// ItemGetCategoryHandler sets the operation handler for the get category operation
@@ -209,6 +214,9 @@ func (o *MindMarketplaceAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.ItemBatchItemHandler == nil {
+		unregistered = append(unregistered, "item.BatchItemHandler")
+	}
 	if o.AccountGetAccountHandler == nil {
 		unregistered = append(unregistered, "account.GetAccountHandler")
 	}
@@ -327,6 +335,10 @@ func (o *MindMarketplaceAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/item/batch"] = item.NewBatchItem(o.context, o.ItemBatchItemHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

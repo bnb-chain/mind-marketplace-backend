@@ -117,6 +117,51 @@ func init() {
         }
       }
     },
+    "/item/batch": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get items in batch",
+        "operationId": "batchItem",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchItemRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/BatchItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/item/categories": {
       "get": {
         "produces": [
@@ -516,7 +561,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -526,6 +571,52 @@ func init() {
           "properties": {
             "account": {
               "$ref": "#/definitions/Account"
+            }
+          }
+        },
+        "message": {
+          "description": "error message if there is error",
+          "type": "string",
+          "example": "signature invalid"
+        }
+      }
+    },
+    "BatchItemRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "item ids",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "BatchItemResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "code defined by api, not equal to http code",
+          "type": "integer",
+          "example": 2000
+        },
+        "data": {
+          "description": "actual data for request",
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Item"
+              }
             }
           }
         },
@@ -707,7 +798,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -731,7 +822,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -758,7 +849,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -792,7 +883,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -894,7 +985,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -1168,6 +1259,51 @@ func init() {
         }
       }
     },
+    "/item/batch": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get items in batch",
+        "operationId": "batchItem",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchItemRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/BatchItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/item/categories": {
       "get": {
         "produces": [
@@ -1567,7 +1703,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -1593,6 +1729,64 @@ func init() {
       "properties": {
         "account": {
           "$ref": "#/definitions/Account"
+        }
+      }
+    },
+    "BatchItemRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "item ids",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "BatchItemResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "code defined by api, not equal to http code",
+          "type": "integer",
+          "example": 2000
+        },
+        "data": {
+          "description": "actual data for request",
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Item"
+              }
+            }
+          }
+        },
+        "message": {
+          "description": "error message if there is error",
+          "type": "string",
+          "example": "signature invalid"
+        }
+      }
+    },
+    "BatchItemResponseData": {
+      "description": "actual data for request",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
         }
       }
     },
@@ -1767,7 +1961,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -1800,7 +1994,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -1839,7 +2033,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -1892,7 +2086,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },
@@ -2013,7 +2207,7 @@ func init() {
       "type": "object",
       "properties": {
         "code": {
-          "description": "code defined by api,not equal to http code",
+          "description": "code defined by api, not equal to http code",
           "type": "integer",
           "example": 2000
         },

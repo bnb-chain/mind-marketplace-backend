@@ -91,6 +91,23 @@ func HandleGetItemByObject() func(params item.GetItemByObjectParams) middleware.
 	}
 }
 
+func HandleBatchItem() func(request item.BatchItemParams) middleware.Responder {
+	return func(params item.BatchItemParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		response, err := service.ItemSvc.Batch(context, params.Body)
+		code, message := Error(err)
+		payload := models.BatchItemResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.BatchItemResponseData{
+				Items: response,
+			}
+		}
+		return item.NewBatchItemOK().WithPayload(&payload)
+	}
+}
+
 func HandleSearchItem() func(request item.SearchItemParams) middleware.Responder {
 	return func(params item.SearchItemParams) middleware.Responder {
 		context := params.HTTPRequest.Context()

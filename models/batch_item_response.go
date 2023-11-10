@@ -14,25 +14,25 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// PagePurchaseResponse page purchase response
+// BatchItemResponse batch item response
 //
-// swagger:model PagePurchaseResponse
-type PagePurchaseResponse struct {
+// swagger:model BatchItemResponse
+type BatchItemResponse struct {
 
 	// code defined by api, not equal to http code
 	// Example: 2000
 	Code int64 `json:"code,omitempty"`
 
 	// data
-	Data *PagePurchaseResponseData `json:"data,omitempty"`
+	Data *BatchItemResponseData `json:"data,omitempty"`
 
 	// error message if there is error
 	// Example: signature invalid
 	Message string `json:"message,omitempty"`
 }
 
-// Validate validates this page purchase response
-func (m *PagePurchaseResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this batch item response
+func (m *BatchItemResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateData(formats); err != nil {
@@ -45,7 +45,7 @@ func (m *PagePurchaseResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *PagePurchaseResponse) validateData(formats strfmt.Registry) error {
+func (m *BatchItemResponse) validateData(formats strfmt.Registry) error {
 	if swag.IsZero(m.Data) { // not required
 		return nil
 	}
@@ -64,8 +64,8 @@ func (m *PagePurchaseResponse) validateData(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this page purchase response based on the context it is used
-func (m *PagePurchaseResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this batch item response based on the context it is used
+func (m *BatchItemResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateData(ctx, formats); err != nil {
@@ -78,7 +78,7 @@ func (m *PagePurchaseResponse) ContextValidate(ctx context.Context, formats strf
 	return nil
 }
 
-func (m *PagePurchaseResponse) contextValidateData(ctx context.Context, formats strfmt.Registry) error {
+func (m *BatchItemResponse) contextValidateData(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Data != nil {
 		if err := m.Data.ContextValidate(ctx, formats); err != nil {
@@ -95,7 +95,7 @@ func (m *PagePurchaseResponse) contextValidateData(ctx context.Context, formats 
 }
 
 // MarshalBinary interface implementation
-func (m *PagePurchaseResponse) MarshalBinary() ([]byte, error) {
+func (m *BatchItemResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -103,8 +103,8 @@ func (m *PagePurchaseResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *PagePurchaseResponse) UnmarshalBinary(b []byte) error {
-	var res PagePurchaseResponse
+func (m *BatchItemResponse) UnmarshalBinary(b []byte) error {
+	var res BatchItemResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
@@ -112,24 +112,20 @@ func (m *PagePurchaseResponse) UnmarshalBinary(b []byte) error {
 	return nil
 }
 
-// PagePurchaseResponseData actual data for request
+// BatchItemResponseData actual data for request
 //
-// swagger:model PagePurchaseResponseData
-type PagePurchaseResponseData struct {
+// swagger:model BatchItemResponseData
+type BatchItemResponseData struct {
 
-	// purchases
-	Purchases []*Purchase `json:"purchases"`
-
-	// total
-	// Example: 1000
-	Total int64 `json:"total"`
+	// items
+	Items []*Item `json:"items"`
 }
 
-// Validate validates this page purchase response data
-func (m *PagePurchaseResponseData) Validate(formats strfmt.Registry) error {
+// Validate validates this batch item response data
+func (m *BatchItemResponseData) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validatePurchases(formats); err != nil {
+	if err := m.validateItems(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -139,22 +135,22 @@ func (m *PagePurchaseResponseData) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *PagePurchaseResponseData) validatePurchases(formats strfmt.Registry) error {
-	if swag.IsZero(m.Purchases) { // not required
+func (m *BatchItemResponseData) validateItems(formats strfmt.Registry) error {
+	if swag.IsZero(m.Items) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.Purchases); i++ {
-		if swag.IsZero(m.Purchases[i]) { // not required
+	for i := 0; i < len(m.Items); i++ {
+		if swag.IsZero(m.Items[i]) { // not required
 			continue
 		}
 
-		if m.Purchases[i] != nil {
-			if err := m.Purchases[i].Validate(formats); err != nil {
+		if m.Items[i] != nil {
+			if err := m.Items[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("data" + "." + "purchases" + "." + strconv.Itoa(i))
+					return ve.ValidateName("data" + "." + "items" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("data" + "." + "purchases" + "." + strconv.Itoa(i))
+					return ce.ValidateName("data" + "." + "items" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -165,11 +161,11 @@ func (m *PagePurchaseResponseData) validatePurchases(formats strfmt.Registry) er
 	return nil
 }
 
-// ContextValidate validate this page purchase response data based on the context it is used
-func (m *PagePurchaseResponseData) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this batch item response data based on the context it is used
+func (m *BatchItemResponseData) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidatePurchases(ctx, formats); err != nil {
+	if err := m.contextValidateItems(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -179,16 +175,16 @@ func (m *PagePurchaseResponseData) ContextValidate(ctx context.Context, formats 
 	return nil
 }
 
-func (m *PagePurchaseResponseData) contextValidatePurchases(ctx context.Context, formats strfmt.Registry) error {
+func (m *BatchItemResponseData) contextValidateItems(ctx context.Context, formats strfmt.Registry) error {
 
-	for i := 0; i < len(m.Purchases); i++ {
+	for i := 0; i < len(m.Items); i++ {
 
-		if m.Purchases[i] != nil {
-			if err := m.Purchases[i].ContextValidate(ctx, formats); err != nil {
+		if m.Items[i] != nil {
+			if err := m.Items[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("data" + "." + "purchases" + "." + strconv.Itoa(i))
+					return ve.ValidateName("data" + "." + "items" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("data" + "." + "purchases" + "." + strconv.Itoa(i))
+					return ce.ValidateName("data" + "." + "items" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -200,7 +196,7 @@ func (m *PagePurchaseResponseData) contextValidatePurchases(ctx context.Context,
 }
 
 // MarshalBinary interface implementation
-func (m *PagePurchaseResponseData) MarshalBinary() ([]byte, error) {
+func (m *BatchItemResponseData) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -208,8 +204,8 @@ func (m *PagePurchaseResponseData) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *PagePurchaseResponseData) UnmarshalBinary(b []byte) error {
-	var res PagePurchaseResponseData
+func (m *BatchItemResponseData) UnmarshalBinary(b []byte) error {
+	var res BatchItemResponseData
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
