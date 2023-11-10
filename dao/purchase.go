@@ -57,7 +57,7 @@ func (dao *dbPurchaseDao) Get(context context.Context, id int64) (database.Purch
 }
 
 func (dao *dbPurchaseDao) Search(context context.Context, itemId int64, address string, sort string, offset, limit int) (total int64, purchases []*database.Purchase, err error) {
-	rawSql := " where 1 = 1 "
+	rawSql := fmt.Sprintf(" inner join items i on p.item_id = i.id where i.status = %d", database.ItemListed)
 	parameters := make([]interface{}, 0)
 
 	if itemId > 0 {
@@ -70,7 +70,7 @@ func (dao *dbPurchaseDao) Search(context context.Context, itemId int64, address 
 		parameters = append(parameters, address)
 	}
 
-	countSql := "select count(1) from purchases " + rawSql
+	countSql := "select count(1) from purchases p " + rawSql
 
 	err = dao.db.Raw(countSql, parameters...).Scan(&total).Error
 	if err != nil {
@@ -80,17 +80,17 @@ func (dao *dbPurchaseDao) Search(context context.Context, itemId int64, address 
 		return
 	}
 
-	dataSql := "select * from purchases " + rawSql
+	dataSql := "select * from purchases p " + rawSql
 	dataSql = dataSql + " order by "
 	switch sort {
 	case PurchaseSortCreationAsc:
-		dataSql = dataSql + "id asc "
+		dataSql = dataSql + "p.id asc "
 	case PurchaseSortCreationDesc:
-		dataSql = dataSql + "id desc "
+		dataSql = dataSql + "p.id desc "
 	case PurchaseSortPriceAsc:
-		dataSql = dataSql + "price asc "
+		dataSql = dataSql + "p.price asc "
 	case PurchaseSortPriceDesc:
-		dataSql = dataSql + "price desc "
+		dataSql = dataSql + "p.price desc "
 	default:
 		return 0, nil, fmt.Errorf("unsupported sort string: %s", sort)
 	}
