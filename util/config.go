@@ -6,12 +6,14 @@ import (
 )
 
 type DBConfig struct {
-	DBDialect    string `json:"db_dialect"`
-	DBPath       string `json:"db_path"`
-	Password     string `json:"password"`
-	Username     string `json:"username"`
-	MaxIdleConns int    `json:"max_idle_conns"`
-	MaxOpenConns int    `json:"max_open_conns"`
+	DBDialect     string `json:"db_dialect"`
+	DBPath        string `json:"db_path"`
+	Password      string `json:"password"`
+	Username      string `json:"username"`
+	MaxIdleConns  int    `json:"max_idle_conns"`
+	MaxOpenConns  int    `json:"max_open_conns"`
+	AWSRegion     string `json:"aws_region"`
+	AWSSecretName string `json:"aws_secret_name"`
 }
 
 type LogConfig struct {
@@ -46,6 +48,11 @@ func ParseServerConfigFromFile(filePath string) *ServerConfig {
 	if err := json.Unmarshal(bz, &config); err != nil {
 		panic(err)
 	}
+
+	if config.DBConfig.Password == "" { // read password from AWS secret
+		config.DBConfig.Password = GetDBPass(config.DBConfig)
+	}
+
 	return &config
 }
 
@@ -79,5 +86,26 @@ func ParseMonitorConfigFromFile(filePath string) *MonitorConfig {
 	if err := json.Unmarshal(bz, &config); err != nil {
 		panic(err)
 	}
+
+	if config.DBConfig.Password == "" { // read password from AWS secret
+		config.DBConfig.Password = GetDBPass(config.DBConfig)
+	}
+
 	return &config
+}
+
+func GetDBPass(cfg *DBConfig) string {
+	result, err := GetSecret(cfg.AWSSecretName, cfg.AWSRegion)
+	if err != nil {
+		panic(err)
+	}
+	type DBPass struct {
+		DbPass string `json:"db_pass"`
+	}
+	var dbPassword DBPass
+	err = json.Unmarshal([]byte(result), &dbPassword)
+	if err != nil {
+		panic(err)
+	}
+	return dbPassword.DbPass
 }

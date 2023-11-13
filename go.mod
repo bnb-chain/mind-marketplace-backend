@@ -5,6 +5,7 @@ go 1.20
 require (
 	cosmossdk.io/math v1.0.1
 	github.com/avast/retry-go/v4 v4.3.1
+	github.com/aws/aws-sdk-go v1.40.45
 	github.com/bnb-chain/greenfield v0.2.6
 	github.com/bnb-chain/greenfield-go-sdk v0.2.6
 	github.com/cometbft/cometbft v0.37.2
@@ -109,6 +110,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
