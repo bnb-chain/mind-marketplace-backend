@@ -32,7 +32,7 @@ func (dao *dbCategoryDao) Create(context context.Context, category *database.Cat
 
 func (dao *dbCategoryDao) Get(context context.Context, name string) (database.Category, error) {
 	var category = database.Category{}
-	if err := dao.db.Raw("select from categories where lower(name) = ?", name).Take(&category).Error; err != nil {
+	if err := dao.db.Raw("select * from categories where lower(name) = ?", name).Take(&category).Error; err != nil {
 		return category, err
 	}
 	return category, nil
