@@ -49,8 +49,8 @@ func ParseServerConfigFromFile(filePath string) *ServerConfig {
 		panic(err)
 	}
 
-	if config.DBConfig.Password == "" { // read password from AWS secret
-		config.DBConfig.Password = GetDBPass(config.DBConfig)
+	if config.DBConfig.Username == "" || config.DBConfig.Password == "" { // read password from AWS secret
+		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePassword(config.DBConfig)
 	}
 
 	return &config
@@ -87,25 +87,26 @@ func ParseMonitorConfigFromFile(filePath string) *MonitorConfig {
 		panic(err)
 	}
 
-	if config.DBConfig.Password == "" { // read password from AWS secret
-		config.DBConfig.Password = GetDBPass(config.DBConfig)
+	if config.DBConfig.Username == "" || config.DBConfig.Password == "" { // read password from AWS secret
+		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePassword(config.DBConfig)
 	}
 
 	return &config
 }
 
-func GetDBPass(cfg *DBConfig) string {
+func GetDBUsernamePassword(cfg *DBConfig) (string, string) {
 	result, err := GetSecret(cfg.AWSSecretName, cfg.AWSRegion)
 	if err != nil {
 		panic(err)
 	}
 	type DBPass struct {
-		DbPass string `json:"db_pass"`
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
 	var dbPassword DBPass
 	err = json.Unmarshal([]byte(result), &dbPassword)
 	if err != nil {
 		panic(err)
 	}
-	return dbPassword.DbPass
+	return dbPassword.Username, dbPassword.Password
 }
