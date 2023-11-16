@@ -33,6 +33,7 @@ func convertItem(item database.Item) *models.Item {
 	result := models.Item{
 		ID:           &id,
 		Type:         &typ,
+		ResourceID:   item.ResourceId,
 		Name:         &item.Name,
 		GroupID:      item.GroupId,
 		GroupName:    item.GroupName,
