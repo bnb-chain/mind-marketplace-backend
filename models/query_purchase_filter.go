@@ -24,19 +24,19 @@ type QueryPurchaseFilter struct {
 	// Min Length: 1
 	Address string `json:"address,omitempty"`
 
-	// item id, the priority itemIds > bucketIds > objectIds
+	// bucket ids, the priority itemIds > bucketIds > objectIds
 	// Example: [1,2,3]
 	// Max Items: 10
 	// Min Items: 1
 	BucketIds []int64 `json:"bucketIds"`
 
-	// item id, the priority itemIds > bucketIds > objectIds
+	// item ids, the priority itemIds > bucketIds > objectIds
 	// Example: [1,2,3]
 	// Max Items: 10
 	// Min Items: 1
 	ItemIds []int64 `json:"itemIds"`
 
-	// item id, the priority itemIds > bucketIds > objectIds
+	// object ids, the priority itemIds > bucketIds > objectIds
 	// Example: [1,2,3]
 	// Max Items: 10
 	// Min Items: 1

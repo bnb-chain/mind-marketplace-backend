@@ -1001,7 +1001,7 @@ definitions:
         type: string
         minLength: 1
       itemIds:
-        description: "item id, the priority itemIds > bucketIds > objectIds"
+        description: "item ids, the priority itemIds > bucketIds > objectIds"
         example: [ 1, 2, 3 ]
         type: array
         items:
@@ -1009,7 +1009,7 @@ definitions:
         minItems: 1
         maxItems: 10
       bucketIds:
-        description: "item id, the priority itemIds > bucketIds > objectIds"
+        description: "bucket ids, the priority itemIds > bucketIds > objectIds"
         example: [ 1, 2, 3 ]
         type: array
         items:
@@ -1017,7 +1017,7 @@ definitions:
         minItems: 1
         maxItems: 10
       objectIds:
-        description: "item id, the priority itemIds > bucketIds > objectIds"
+        description: "object ids, the priority itemIds > bucketIds > objectIds"
         example: [ 1, 2, 3 ]
         type: array
         items:

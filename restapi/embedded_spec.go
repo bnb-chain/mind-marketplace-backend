@@ -1182,7 +1182,7 @@ func init() {
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
         "bucketIds": {
-          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "description": "bucket ids, the priority itemIds \u003e bucketIds \u003e objectIds",
           "type": "array",
           "maxItems": 10,
           "minItems": 1,
@@ -1196,7 +1196,7 @@ func init() {
           ]
         },
         "itemIds": {
-          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "description": "item ids, the priority itemIds \u003e bucketIds \u003e objectIds",
           "type": "array",
           "maxItems": 10,
           "minItems": 1,
@@ -1210,7 +1210,7 @@ func init() {
           ]
         },
         "objectIds": {
-          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "description": "object ids, the priority itemIds \u003e bucketIds \u003e objectIds",
           "type": "array",
           "maxItems": 10,
           "minItems": 1,
@@ -2667,7 +2667,7 @@ func init() {
           "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
         },
         "bucketIds": {
-          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "description": "bucket ids, the priority itemIds \u003e bucketIds \u003e objectIds",
           "type": "array",
           "maxItems": 10,
           "minItems": 1,
@@ -2681,7 +2681,7 @@ func init() {
           ]
         },
         "itemIds": {
-          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "description": "item ids, the priority itemIds \u003e bucketIds \u003e objectIds",
           "type": "array",
           "maxItems": 10,
           "minItems": 1,
@@ -2695,7 +2695,7 @@ func init() {
           ]
         },
         "objectIds": {
-          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "description": "object ids, the priority itemIds \u003e bucketIds \u003e objectIds",
           "type": "array",
           "maxItems": 10,
           "minItems": 1,
