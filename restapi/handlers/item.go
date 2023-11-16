@@ -108,6 +108,40 @@ func HandleBatchItem() func(request item.BatchItemParams) middleware.Responder {
 	}
 }
 
+func HandleGetItemByBuckets() func(request item.GetItemByBucketsParams) middleware.Responder {
+	return func(params item.GetItemByBucketsParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		response, err := service.ItemSvc.GetByBuckets(context, params.Body)
+		code, message := Error(err)
+		payload := models.BatchItemResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.BatchItemResponseData{
+				Items: response,
+			}
+		}
+		return item.NewBatchItemOK().WithPayload(&payload)
+	}
+}
+
+func HandleGetItemByObjects() func(request item.GetItemByObjectsParams) middleware.Responder {
+	return func(params item.GetItemByObjectsParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		response, err := service.ItemSvc.GetByObjects(context, params.Body)
+		code, message := Error(err)
+		payload := models.BatchItemResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.BatchItemResponseData{
+				Items: response,
+			}
+		}
+		return item.NewBatchItemOK().WithPayload(&payload)
+	}
+}
+
 func HandleSearchItem() func(request item.SearchItemParams) middleware.Responder {
 	return func(params item.SearchItemParams) middleware.Responder {
 		context := params.HTTPRequest.Context()

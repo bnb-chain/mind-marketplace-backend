@@ -194,6 +194,34 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /item_by_buckets:
+    post:
+      tags:
+        - "item"
+      summary: "Get items by buckets"
+      operationId: "getItemByBuckets"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ItemByBucketsRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BatchItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
   /item_by_object/{objectId}:
     get:
       tags:
@@ -224,6 +252,33 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /item_by_objects:
+    post:
+      tags:
+        - "item"
+      summary: "Get items by objects"
+      operationId: "getItemByObjects"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ItemByObjectsRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BatchItemResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
 
   /item/search:
     post:
@@ -332,6 +387,36 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/SearchPurchaseRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/PagePurchaseResponse"
+        "400":
+          description: 'Bad Request'
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+
+  /purchase/query:
+    post:
+      tags:
+        - "purchase"
+      summary: "Query purchase"
+      operationId: "queryPurchase"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/QueryPurchaseRequest"
       responses:
         "200":
           description: "successful operation"
@@ -853,6 +938,92 @@ definitions:
         default: 10
         minimum: 1
         maximum: 20
+
+  ItemByBucketsRequest:
+    type: object
+    properties:
+      ids:
+        description: "bucket ids"
+        example: [ 1, 2, 3 ]
+        type: array
+        items:
+          type: integer
+        minItems: 1
+        maxItems: 10
+
+  ItemByObjectsRequest:
+    type: object
+    properties:
+      ids:
+        description: "object ids"
+        example: [ 1, 2, 3 ]
+        type: array
+        items:
+          type: integer
+        minItems: 1
+        maxItems: 10
+
+  QueryPurchaseRequest:
+    type: object
+    properties:
+      filter:
+        description: "filter"
+        $ref: "#/definitions/QueryPurchaseFilter"
+      sort:
+        description: "sort"
+        type: string
+        enum:
+          - CREATION_ASC
+          - CREATION_DESC
+          - PRICE_ASC
+          - PRICE_DESC
+        default: CREATION_DESC
+      offset:
+        type: integer
+        format: int64
+        description: "offset"
+        default: 0
+        minimum: 0
+      limit:
+        type: integer
+        format: int64
+        description: "limit"
+        default: 10
+        minimum: 1
+        maximum: 20
+
+  QueryPurchaseFilter:
+    type: object
+    properties:
+      address:
+        description: "account address"
+        example: "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+        type: string
+        minLength: 1
+      itemIds:
+        description: "item id, the priority itemIds > bucketIds > objectIds"
+        example: [ 1, 2, 3 ]
+        type: array
+        items:
+          type: integer
+        minItems: 1
+        maxItems: 10
+      bucketIds:
+        description: "item id, the priority itemIds > bucketIds > objectIds"
+        example: [ 1, 2, 3 ]
+        type: array
+        items:
+          type: integer
+        minItems: 1
+        maxItems: 10
+      objectIds:
+        description: "item id, the priority itemIds > bucketIds > objectIds"
+        example: [ 1, 2, 3 ]
+        type: array
+        items:
+          type: integer
+        minItems: 1
+        maxItems: 10
 
 externalDocs:
   description: "Find out more about data marketplace"

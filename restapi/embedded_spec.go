@@ -325,6 +325,48 @@ func init() {
         }
       }
     },
+    "/item_by_buckets": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get items by buckets",
+        "operationId": "getItemByBuckets",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ItemByBucketsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/BatchItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/item_by_group/{groupId}": {
       "get": {
         "produces": [
@@ -394,6 +436,93 @@ func init() {
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/item_by_objects": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get items by objects",
+        "operationId": "getItemByObjects",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ItemByObjectsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/BatchItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/purchase/query": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "purchase"
+        ],
+        "summary": "Query purchase",
+        "operationId": "queryPurchase",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QueryPurchaseRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/PagePurchaseResponse"
             }
           },
           "400": {
@@ -771,6 +900,44 @@ func init() {
         }
       }
     },
+    "ItemByBucketsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "bucket ids",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "ItemByObjectsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "object ids",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
     "ItemFilter": {
       "type": "object",
       "properties": {
@@ -1002,6 +1169,93 @@ func init() {
           "description": "error message if there is error",
           "type": "string",
           "example": "signature invalid"
+        }
+      }
+    },
+    "QueryPurchaseFilter": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "description": "account address",
+          "type": "string",
+          "minLength": 1,
+          "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+        },
+        "bucketIds": {
+          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        },
+        "itemIds": {
+          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        },
+        "objectIds": {
+          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "QueryPurchaseRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "filter",
+          "$ref": "#/definitions/QueryPurchaseFilter"
+        },
+        "limit": {
+          "description": "limit",
+          "type": "integer",
+          "format": "int64",
+          "default": 10,
+          "maximum": 20,
+          "minimum": 1
+        },
+        "offset": {
+          "description": "offset",
+          "type": "integer",
+          "format": "int64",
+          "default": 0
+        },
+        "sort": {
+          "description": "sort",
+          "type": "string",
+          "default": "CREATION_DESC",
+          "enum": [
+            "CREATION_ASC",
+            "CREATION_DESC",
+            "PRICE_ASC",
+            "PRICE_DESC"
+          ]
         }
       }
     },
@@ -1467,6 +1721,48 @@ func init() {
         }
       }
     },
+    "/item_by_buckets": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get items by buckets",
+        "operationId": "getItemByBuckets",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ItemByBucketsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/BatchItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/item_by_group/{groupId}": {
       "get": {
         "produces": [
@@ -1536,6 +1832,93 @@ func init() {
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/ItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/item_by_objects": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "item"
+        ],
+        "summary": "Get items by objects",
+        "operationId": "getItemByObjects",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ItemByObjectsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/BatchItemResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/purchase/query": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "purchase"
+        ],
+        "summary": "Query purchase",
+        "operationId": "queryPurchase",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QueryPurchaseRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/PagePurchaseResponse"
             }
           },
           "400": {
@@ -1934,6 +2317,44 @@ func init() {
         }
       }
     },
+    "ItemByBucketsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "bucket ids",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "ItemByObjectsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "object ids",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
     "ItemFilter": {
       "type": "object",
       "properties": {
@@ -2233,6 +2654,94 @@ func init() {
       "properties": {
         "purchase": {
           "$ref": "#/definitions/Purchase"
+        }
+      }
+    },
+    "QueryPurchaseFilter": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "description": "account address",
+          "type": "string",
+          "minLength": 1,
+          "example": "0x0BAC492386862aD3dF4B666Bc096b0505BB694Da"
+        },
+        "bucketIds": {
+          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        },
+        "itemIds": {
+          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        },
+        "objectIds": {
+          "description": "item id, the priority itemIds \u003e bucketIds \u003e objectIds",
+          "type": "array",
+          "maxItems": 10,
+          "minItems": 1,
+          "items": {
+            "type": "integer"
+          },
+          "example": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "QueryPurchaseRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "filter",
+          "$ref": "#/definitions/QueryPurchaseFilter"
+        },
+        "limit": {
+          "description": "limit",
+          "type": "integer",
+          "format": "int64",
+          "default": 10,
+          "maximum": 20,
+          "minimum": 1
+        },
+        "offset": {
+          "description": "offset",
+          "type": "integer",
+          "format": "int64",
+          "default": 0,
+          "minimum": 0
+        },
+        "sort": {
+          "description": "sort",
+          "type": "string",
+          "default": "CREATION_DESC",
+          "enum": [
+            "CREATION_ASC",
+            "CREATION_DESC",
+            "PRICE_ASC",
+            "PRICE_DESC"
+          ]
         }
       }
     },

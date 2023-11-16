@@ -42,3 +42,21 @@ func HandleSearchPurchase() func(request purchase.SearchPurchaseParams) middlewa
 		return purchase.NewSearchPurchaseOK().WithPayload(&payload)
 	}
 }
+
+func HandleQueryPurchase() func(request purchase.QueryPurchaseParams) middleware.Responder {
+	return func(params purchase.QueryPurchaseParams) middleware.Responder {
+		context := params.HTTPRequest.Context()
+		total, response, err := service.PurchaseSvc.Query(context, params.Body)
+		code, message := Error(err)
+		payload := models.PagePurchaseResponse{
+			Code:    code,
+			Message: message}
+		if err == nil {
+			payload.Data = &models.PagePurchaseResponseData{
+				Purchases: response,
+				Total:     total,
+			}
+		}
+		return purchase.NewSearchPurchaseOK().WithPayload(&payload)
+	}
+}

@@ -65,11 +65,14 @@ func configureAPI(api *operations.MindMarketplaceAPI) http.Handler {
 	api.ItemGetItemByGroupHandler = item.GetItemByGroupHandlerFunc(handlers.HandleGetItemByGroup())
 	api.ItemGetItemByBucketHandler = item.GetItemByBucketHandlerFunc(handlers.HandleGetItemByBucket())
 	api.ItemGetItemByObjectHandler = item.GetItemByObjectHandlerFunc(handlers.HandleGetItemByObject())
+	api.ItemGetItemByBucketsHandler = item.GetItemByBucketsHandlerFunc(handlers.HandleGetItemByBuckets())
+	api.ItemGetItemByObjectsHandler = item.GetItemByObjectsHandlerFunc(handlers.HandleGetItemByObjects())
 	api.ItemBatchItemHandler = item.BatchItemHandlerFunc(handlers.HandleBatchItem())
 	api.ItemSearchItemHandler = item.SearchItemHandlerFunc(handlers.HandleSearchItem())
 
 	api.PurchaseGetPurchaseHandler = purchase.GetPurchaseHandlerFunc(handlers.HandleGetPurchase())
 	api.PurchaseSearchPurchaseHandler = purchase.SearchPurchaseHandlerFunc(handlers.HandleSearchPurchase())
+	api.PurchaseQueryPurchaseHandler = purchase.QueryPurchaseHandlerFunc(handlers.HandleQueryPurchase())
 
 	api.PreServerShutdown = func() {}
 
