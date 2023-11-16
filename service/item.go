@@ -12,7 +12,9 @@ type Item interface {
 	Get(context context.Context, id int64) (*models.Item, error)
 	GetByGroup(context context.Context, groupId int64) (*models.Item, error)
 	GetByBucket(context context.Context, bucketId int64) (*models.Item, error)
+	GetByBuckets(context context.Context, request *models.ItemByBucketsRequest) ([]*models.Item, error)
 	GetByObject(context context.Context, objectId int64) (*models.Item, error)
+	GetByObjects(context context.Context, request *models.ItemByObjectsRequest) ([]*models.Item, error)
 	Batch(context context.Context, request *models.BatchItemRequest) ([]*models.Item, error)
 	Search(context context.Context, request *models.SearchItemRequest) (int64, []*models.Item, error)
 }
@@ -66,6 +68,23 @@ func (s *ItemService) GetByBucket(context context.Context, bucketId int64) (*mod
 	return convertItem(item), nil
 }
 
+func (s *ItemService) GetByBuckets(context context.Context, request *models.ItemByBucketsRequest) ([]*models.Item, error) {
+	items, err := s.itemDao.GetByBucketIds(context, request.Ids, false)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, NotFoundErr
+		} else {
+			return nil, fmt.Errorf("fail to get item")
+		}
+	}
+	batch := make([]*models.Item, 0)
+	for _, c := range items {
+		r := convertItem(c)
+		batch = append(batch, r)
+	}
+	return batch, nil
+}
+
 func (s *ItemService) GetByObject(context context.Context, objectId int64) (*models.Item, error) {
 	item, err := s.itemDao.GetByObjectId(context, objectId, false)
 	if err != nil {
@@ -77,6 +96,23 @@ func (s *ItemService) GetByObject(context context.Context, objectId int64) (*mod
 	}
 
 	return convertItem(item), nil
+}
+
+func (s *ItemService) GetByObjects(context context.Context, request *models.ItemByObjectsRequest) ([]*models.Item, error) {
+	items, err := s.itemDao.GetByObjectIds(context, request.Ids, false)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, NotFoundErr
+		} else {
+			return nil, fmt.Errorf("fail to get item")
+		}
+	}
+	batch := make([]*models.Item, 0)
+	for _, c := range items {
+		r := convertItem(c)
+		batch = append(batch, r)
+	}
+	return batch, nil
 }
 
 func (s *ItemService) Batch(context context.Context, request *models.BatchItemRequest) ([]*models.Item, error) {

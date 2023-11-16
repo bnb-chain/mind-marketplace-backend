@@ -24,6 +24,8 @@ type ItemDao interface {
 	GetByGroupId(context context.Context, groupId int64, includeAll bool) (database.Item, error)
 	GetByBucketId(context context.Context, bucketId int64, includeAll bool) (database.Item, error)
 	GetByObjectId(context context.Context, objectId int64, includeAll bool) (database.Item, error)
+	GetByBucketIds(context context.Context, bucketIds []int64, includeAll bool) ([]database.Item, error)
+	GetByObjectIds(context context.Context, objectIds []int64, includeAll bool) ([]database.Item, error)
 	Batch(context context.Context, ids []int64, includeAll bool) ([]database.Item, error)
 	Search(context context.Context, categoryId int64, address, keyword string, includeAll bool, sort string, offset, limit int) (int64, []*database.Item, error)
 }
@@ -128,6 +130,36 @@ func (dao *dbItemDao) GetByObjectId(context context.Context, objectId int64, inc
 		}
 	}
 	return item, nil
+}
+
+func (dao *dbItemDao) GetByBucketIds(context context.Context, bucketIds []int64, includeAll bool) ([]database.Item, error) {
+	items := make([]database.Item, 0)
+	if includeAll {
+		if err := dao.db.Preload("Stats").Where("resource_id in ? and type = ?", bucketIds, database.COLLECTION).Find(&items).Error; err != nil {
+			return items, err
+		}
+	} else {
+		if err := dao.db.Preload("Stats").Where("resource_id in ? and type = ? and status <> ? and status <> ? and status <> ?",
+			bucketIds, database.COLLECTION, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Find(&items).Error; err != nil {
+			return items, err
+		}
+	}
+	return items, nil
+}
+
+func (dao *dbItemDao) GetByObjectIds(context context.Context, objectIds []int64, includeAll bool) ([]database.Item, error) {
+	items := make([]database.Item, 0)
+	if includeAll {
+		if err := dao.db.Preload("Stats").Where("resource_id in ? and type = ?", objectIds, database.OBJECT).Find(&items).Error; err != nil {
+			return items, err
+		}
+	} else {
+		if err := dao.db.Preload("Stats").Where("resource_id in ? and type = ? and status <> ? and status <> ? and status <> ?",
+			objectIds, database.OBJECT, database.ItemBlocked, database.ItemDelisted, database.ItemPending).Find(&items).Error; err != nil {
+			return items, err
+		}
+	}
+	return items, nil
 }
 
 func (dao *dbItemDao) Batch(context context.Context, ids []int64, includeAll bool) ([]database.Item, error) {

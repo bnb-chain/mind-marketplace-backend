@@ -12,6 +12,7 @@ import (
 type Purchase interface {
 	Get(context context.Context, id int64) (*models.Purchase, error)
 	Search(context context.Context, request *models.SearchPurchaseRequest) (int64, []*models.Purchase, error)
+	Query(context context.Context, request *models.QueryPurchaseRequest) (int64, []*models.Purchase, error)
 }
 
 type PurchaseService struct {
@@ -40,12 +41,16 @@ func (s *PurchaseService) Get(context context.Context, id int64) (*models.Purcha
 }
 
 func (s *PurchaseService) Search(context context.Context, request *models.SearchPurchaseRequest) (int64, []*models.Purchase, error) {
-	itemId, bucketId, objectId := int64(0), int64(0), int64(0)
+	itemIds, bucketIds, objectIds := make([]int64, 0), make([]int64, 0), make([]int64, 0)
 	address := ""
 	if request.Filter != nil {
-		itemId = request.Filter.ItemID
-		bucketId = request.Filter.BucketID
-		objectId = request.Filter.ObjectID
+		if request.Filter.ItemID > 0 {
+			itemIds = append(itemIds, request.Filter.ItemID)
+		} else if request.Filter.BucketID > 0 {
+			bucketIds = append(bucketIds, request.Filter.BucketID)
+		} else if request.Filter.ObjectID > 0 {
+			objectIds = append(objectIds, request.Filter.ObjectID)
+		}
 		address = request.Filter.Address
 	}
 
@@ -71,17 +76,57 @@ func (s *PurchaseService) Search(context context.Context, request *models.Search
 		return 0, nil, TooBigLimitErr
 	}
 
-	if itemId <= 0 { //item id is not provided
-		if bucketId > 0 { // bucket id is provided
-			item, _ := s.itemDao.GetByBucketId(context, bucketId, true)
-			itemId = item.Id
-		} else if objectId > 0 { // object id is provided
-			item, _ := s.itemDao.GetByObjectId(context, objectId, true)
-			itemId = item.Id
+	total, purchases, err := s.purchaseDao.Query(context, itemIds, bucketIds, objectIds, address, sort, offset, limit)
+	if err != nil {
+		return 0, nil, fmt.Errorf("fail to search purchase")
+	}
+
+	if len(purchases) == 0 {
+		return total, []*models.Purchase{}, nil
+	}
+
+	page := make([]*models.Purchase, 0)
+	for _, p := range purchases {
+		r := convertPurchase(*p)
+		page = append(page, r)
+	}
+
+	return total, page, nil
+}
+
+func (s *PurchaseService) Query(context context.Context, request *models.QueryPurchaseRequest) (int64, []*models.Purchase, error) {
+	itemIds, bucketIds, objectIds := make([]int64, 0), make([]int64, 0), make([]int64, 0)
+	address := ""
+	if request.Filter != nil {
+		itemIds = request.Filter.ItemIds
+		bucketIds = request.Filter.BucketIds
+		objectIds = request.Filter.ObjectIds
+		address = request.Filter.Address
+	}
+
+	if len(address) != 0 {
+		if err := validateAddress(address); err != nil {
+			return 0, nil, err
 		}
 	}
 
-	total, purchases, err := s.purchaseDao.Search(context, itemId, address, sort, offset, limit)
+	offset := 0
+	if request.Offset != nil {
+		offset = int(*request.Offset)
+	}
+	sort := models.SearchPurchaseRequestSortCREATIONDESC
+	if request.Sort != nil {
+		sort = *request.Sort
+	}
+	limit := defaultSearchLimit
+	if request.Limit > 0 {
+		limit = int(request.Limit)
+	}
+	if limit > maxSearchLimit {
+		return 0, nil, TooBigLimitErr
+	}
+
+	total, purchases, err := s.purchaseDao.Query(context, itemIds, bucketIds, objectIds, address, sort, offset, limit)
 	if err != nil {
 		return 0, nil, fmt.Errorf("fail to search purchase")
 	}

@@ -61,14 +61,23 @@ func NewMindMarketplaceAPI(spec *loads.Document) *MindMarketplaceAPI {
 		ItemGetItemByBucketHandler: item.GetItemByBucketHandlerFunc(func(params item.GetItemByBucketParams) middleware.Responder {
 			return middleware.NotImplemented("operation item.GetItemByBucket has not yet been implemented")
 		}),
+		ItemGetItemByBucketsHandler: item.GetItemByBucketsHandlerFunc(func(params item.GetItemByBucketsParams) middleware.Responder {
+			return middleware.NotImplemented("operation item.GetItemByBuckets has not yet been implemented")
+		}),
 		ItemGetItemByGroupHandler: item.GetItemByGroupHandlerFunc(func(params item.GetItemByGroupParams) middleware.Responder {
 			return middleware.NotImplemented("operation item.GetItemByGroup has not yet been implemented")
 		}),
 		ItemGetItemByObjectHandler: item.GetItemByObjectHandlerFunc(func(params item.GetItemByObjectParams) middleware.Responder {
 			return middleware.NotImplemented("operation item.GetItemByObject has not yet been implemented")
 		}),
+		ItemGetItemByObjectsHandler: item.GetItemByObjectsHandlerFunc(func(params item.GetItemByObjectsParams) middleware.Responder {
+			return middleware.NotImplemented("operation item.GetItemByObjects has not yet been implemented")
+		}),
 		PurchaseGetPurchaseHandler: purchase.GetPurchaseHandlerFunc(func(params purchase.GetPurchaseParams) middleware.Responder {
 			return middleware.NotImplemented("operation purchase.GetPurchase has not yet been implemented")
+		}),
+		PurchaseQueryPurchaseHandler: purchase.QueryPurchaseHandlerFunc(func(params purchase.QueryPurchaseParams) middleware.Responder {
+			return middleware.NotImplemented("operation purchase.QueryPurchase has not yet been implemented")
 		}),
 		ItemSearchItemHandler: item.SearchItemHandlerFunc(func(params item.SearchItemParams) middleware.Responder {
 			return middleware.NotImplemented("operation item.SearchItem has not yet been implemented")
@@ -125,12 +134,18 @@ type MindMarketplaceAPI struct {
 	ItemGetItemHandler item.GetItemHandler
 	// ItemGetItemByBucketHandler sets the operation handler for the get item by bucket operation
 	ItemGetItemByBucketHandler item.GetItemByBucketHandler
+	// ItemGetItemByBucketsHandler sets the operation handler for the get item by buckets operation
+	ItemGetItemByBucketsHandler item.GetItemByBucketsHandler
 	// ItemGetItemByGroupHandler sets the operation handler for the get item by group operation
 	ItemGetItemByGroupHandler item.GetItemByGroupHandler
 	// ItemGetItemByObjectHandler sets the operation handler for the get item by object operation
 	ItemGetItemByObjectHandler item.GetItemByObjectHandler
+	// ItemGetItemByObjectsHandler sets the operation handler for the get item by objects operation
+	ItemGetItemByObjectsHandler item.GetItemByObjectsHandler
 	// PurchaseGetPurchaseHandler sets the operation handler for the get purchase operation
 	PurchaseGetPurchaseHandler purchase.GetPurchaseHandler
+	// PurchaseQueryPurchaseHandler sets the operation handler for the query purchase operation
+	PurchaseQueryPurchaseHandler purchase.QueryPurchaseHandler
 	// ItemSearchItemHandler sets the operation handler for the search item operation
 	ItemSearchItemHandler item.SearchItemHandler
 	// PurchaseSearchPurchaseHandler sets the operation handler for the search purchase operation
@@ -229,14 +244,23 @@ func (o *MindMarketplaceAPI) Validate() error {
 	if o.ItemGetItemByBucketHandler == nil {
 		unregistered = append(unregistered, "item.GetItemByBucketHandler")
 	}
+	if o.ItemGetItemByBucketsHandler == nil {
+		unregistered = append(unregistered, "item.GetItemByBucketsHandler")
+	}
 	if o.ItemGetItemByGroupHandler == nil {
 		unregistered = append(unregistered, "item.GetItemByGroupHandler")
 	}
 	if o.ItemGetItemByObjectHandler == nil {
 		unregistered = append(unregistered, "item.GetItemByObjectHandler")
 	}
+	if o.ItemGetItemByObjectsHandler == nil {
+		unregistered = append(unregistered, "item.GetItemByObjectsHandler")
+	}
 	if o.PurchaseGetPurchaseHandler == nil {
 		unregistered = append(unregistered, "purchase.GetPurchaseHandler")
+	}
+	if o.PurchaseQueryPurchaseHandler == nil {
+		unregistered = append(unregistered, "purchase.QueryPurchaseHandler")
 	}
 	if o.ItemSearchItemHandler == nil {
 		unregistered = append(unregistered, "item.SearchItemHandler")
@@ -355,6 +379,10 @@ func (o *MindMarketplaceAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/item_by_bucket/{bucketId}"] = item.NewGetItemByBucket(o.context, o.ItemGetItemByBucketHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/item_by_buckets"] = item.NewGetItemByBuckets(o.context, o.ItemGetItemByBucketsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -363,10 +391,18 @@ func (o *MindMarketplaceAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/item_by_object/{objectId}"] = item.NewGetItemByObject(o.context, o.ItemGetItemByObjectHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/item_by_objects"] = item.NewGetItemByObjects(o.context, o.ItemGetItemByObjectsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/purchase/{purchaseId}"] = purchase.NewGetPurchase(o.context, o.PurchaseGetPurchaseHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/purchase/query"] = purchase.NewQueryPurchase(o.context, o.PurchaseQueryPurchaseHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
