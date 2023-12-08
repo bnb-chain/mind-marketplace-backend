@@ -49,8 +49,11 @@ func ParseServerConfigFromFile(filePath string) *ServerConfig {
 		panic(err)
 	}
 
+	if config.DBConfig.Username == "" || config.DBConfig.Password == "" { // read password from ENV
+		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePasswordFromEnv()
+	}
 	if config.DBConfig.Username == "" || config.DBConfig.Password == "" { // read password from AWS secret
-		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePassword(config.DBConfig)
+		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePasswordFromSM(config.DBConfig) // get from env
 	}
 
 	return &config
@@ -87,14 +90,23 @@ func ParseMonitorConfigFromFile(filePath string) *MonitorConfig {
 		panic(err)
 	}
 
+	if config.DBConfig.Username == "" || config.DBConfig.Password == "" { // read password from ENV
+		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePasswordFromEnv()
+	}
 	if config.DBConfig.Username == "" || config.DBConfig.Password == "" { // read password from AWS secret
-		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePassword(config.DBConfig)
+		config.DBConfig.Username, config.DBConfig.Password = GetDBUsernamePasswordFromSM(config.DBConfig) // get from env
 	}
 
 	return &config
 }
 
-func GetDBUsernamePassword(cfg *DBConfig) (string, string) {
+func GetDBUsernamePasswordFromEnv() (string, string) {
+	username := os.Getenv("DB_USERNAME")
+	password := os.Getenv("DB_PASSWORD")
+	return username, password
+}
+
+func GetDBUsernamePasswordFromSM(cfg *DBConfig) (string, string) {
 	result, err := GetSecret(cfg.AWSSecretName, cfg.AWSRegion)
 	if err != nil {
 		panic(err)
