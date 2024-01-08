@@ -192,7 +192,8 @@ func (dao *dbItemDao) Search(context context.Context, categoryId int64, address,
 	}
 
 	if len(keyword) > 0 {
-		rawSql = rawSql + ` and name like ?`
+		rawSql = rawSql + ` and (name like ? or description like ?) `
+		parameters = append(parameters, "%"+keyword+"%")
 		parameters = append(parameters, "%"+keyword+"%")
 	}
 
