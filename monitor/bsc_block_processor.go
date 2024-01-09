@@ -204,8 +204,9 @@ func (p *BscBlockProcessor) handleEventList(blockHeight uint64, l types.Log) (st
 		return "", err
 	}
 
-	rawSql := fmt.Sprintf("update items set status = %d, price = %s, updated_bsc_height = %d where group_id = %d ",
-		database.ItemListed, event.Price, blockHeight, event.GroupId)
+	// only list Objects, i.e., pictures
+	rawSql := fmt.Sprintf("update items set status = %d, price = %s, updated_bsc_height = %d where group_id = %d and `type` = %d",
+		database.ItemListed, event.Price, blockHeight, event.GroupId, database.OBJECT)
 
 	return rawSql, nil
 }
