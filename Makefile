@@ -3,9 +3,9 @@ PACKAGES=$(shell go list ./dao ./service ./monitor/.)
 
 build_monitor:
 ifeq ($(OS),Windows_NT)
-	go build $(BUILD_FLAGS) -o build/monitor.exe cmd/mind-marketplace-monitor/main.go
+	CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build $(BUILD_FLAGS) -o build/monitor.exe cmd/mind-marketplace-monitor/main.go
 else
-	go build $(BUILD_FLAGS) -o build/monitor cmd/mind-marketplace-monitor/main.go
+	CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build $(BUILD_FLAGS) -o build/monitor cmd/mind-marketplace-monitor/main.go
 endif
 
 #build_monitor_docker:
@@ -13,9 +13,9 @@ endif
 
 build_server:
 ifeq ($(OS),Windows_NT)
-	go build $(BUILD_FLAGS) -o build/server.exe cmd/mind-marketplace-server/main.go
+	CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build $(BUILD_FLAGS) -o build/server.exe cmd/mind-marketplace-server/main.go
 else
-	go build $(BUILD_FLAGS) -o build/server cmd/mind-marketplace-server/main.go
+	CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build $(BUILD_FLAGS) -o build/server cmd/mind-marketplace-server/main.go
 endif
 
 #build_server_docker:
