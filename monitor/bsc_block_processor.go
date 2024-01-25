@@ -59,7 +59,7 @@ func (p *BscBlockProcessor) GetDatabaseBlockHeight() (uint64, error) {
 }
 
 func (p *BscBlockProcessor) GetBlockchainBlockHeight() (uint64, error) {
-	return p.client.GetLatestFinalizedBlockHeightWithRetry()
+	return p.client.GetLatestBlockHeightWithRetry()
 }
 
 func (p *BscBlockProcessor) Process(blockHeight uint64) error {
