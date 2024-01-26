@@ -17,11 +17,15 @@ func Connect() (*gorm.DB, error) {
 
 func ConnectDBWithConfig(config *util.DBConfig) (*gorm.DB, error) {
 	if config.DBDialect == "sqlite3" {
-		db, err := gorm.Open(sqlite.Open(config.DBPath), &gorm.Config{})
+		db, err := gorm.Open(sqlite.Open(config.DBPath), &gorm.Config{
+			DisableForeignKeyConstraintWhenMigrating: true,
+		})
 		return db.Debug(), err
 	} else if config.DBDialect == "mysql" {
 		dbPath := fmt.Sprintf("%s:%s@%s", config.Username, config.Password, config.DBPath)
-		db, err := gorm.Open(mysql.Open(dbPath), &gorm.Config{})
+		db, err := gorm.Open(mysql.Open(dbPath), &gorm.Config{
+			DisableForeignKeyConstraintWhenMigrating: true,
+		})
 		if err != nil {
 			panic(err)
 		}
