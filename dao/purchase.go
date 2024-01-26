@@ -51,7 +51,7 @@ func (dao *dbPurchaseDao) Update(context context.Context, purchase *database.Pur
 
 func (dao *dbPurchaseDao) Get(context context.Context, id int64) (database.Purchase, error) {
 	var purchase = database.Purchase{}
-	if err := dao.db.Preload("Item").Where("id = ?", id).Take(&purchase).Error; err != nil {
+	if err := dao.db.Preload("Item").Preload("Item.Stats").Where("id = ?", id).Take(&purchase).Error; err != nil {
 		return purchase, err
 	}
 	return purchase, nil

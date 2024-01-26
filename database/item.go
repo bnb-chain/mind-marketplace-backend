@@ -42,7 +42,7 @@ type Item struct {
 	UpdatedGnfdHeight int64           `json:"updated_gnfd_height"`
 	UpdatedBscHeight  int64           `json:"updated_bsc_height"`
 
-	Stats *ItemStats `json:"stats" gorm:"foreignKey:ItemId"`
+	Stats *ItemStats `json:"stats"`
 }
 
 type ItemStats struct {
