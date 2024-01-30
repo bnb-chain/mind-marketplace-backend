@@ -98,14 +98,12 @@ func (p *BscBlockProcessor) Process(blockHeight uint64) error {
 			rawSqls = append(rawSqls, sql)
 		}
 
-		sql, err = p.handleEventDelist(blockHeight, l)
+		sqls, err = p.handleEventDelist(blockHeight, l)
 		if err != nil {
 			util.Logger.Errorf("processor: %s, fail to handle EventDelist err: %s", p.Name(), err)
 			return err
 		}
-		if sql != "" {
-			rawSqls = append(rawSqls, sql)
-		}
+		rawSqls = append(rawSqls, sqls...)
 
 		sql, err = p.handleEventPriceUpdated(blockHeight, l)
 		if err != nil {
@@ -211,27 +209,35 @@ func (p *BscBlockProcessor) handleEventList(blockHeight uint64, l types.Log) (st
 	return rawSql, nil
 }
 
-func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) (string, error) {
+func (p *BscBlockProcessor) handleEventDelist(blockHeight uint64, l types.Log) ([]string, error) {
+	sqls := make([]string, 0)
 	event, err := parseDelistEvent(l)
 	if err != nil {
 		util.Logger.Errorf("processor: %s, fail to parse DelistEvent err: %s", p.Name(), err)
-		return "", err
+		return sqls, err
 	}
 	if event == nil {
-		return "", nil
+		return sqls, nil
 	}
 
 	// item should be existed
-	_, err = p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), true)
+	item, err := p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), true)
 	if err != nil {
 		util.Logger.Errorf("processor: %s, fail to find item %d err: %s", p.Name(), event.GroupId.Int64(), err)
-		return "", err
+		return sqls, err
 	}
 
-	rawSql := fmt.Sprintf("update items set status = %d, updated_bsc_height = %d where group_id = %d ",
-		database.ItemDelisted, blockHeight, event.GroupId)
+	rawSql1 := fmt.Sprintf("delete from item_stats where item_id = %d ", item.Id)
+	sqls = append(sqls, rawSql1)
 
-	return rawSql, nil
+	rawSql2 := fmt.Sprintf("delete from purchases where item_id = %d ", item.Id)
+	sqls = append(sqls, rawSql2)
+
+	rawSql3 := fmt.Sprintf("update items set status = %d, updated_bsc_height = %d where group_id = %d ",
+		database.ItemDelisted, blockHeight, event.GroupId)
+	sqls = append(sqls, rawSql3)
+
+	return sqls, nil
 }
 
 func (p *BscBlockProcessor) handleEventPriceUpdated(blockHeight uint64, l types.Log) (string, error) {
