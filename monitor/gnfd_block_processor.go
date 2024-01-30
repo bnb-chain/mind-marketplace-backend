@@ -85,46 +85,60 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 	rawUpdateSqls := []string{}
 	rawDeleteSqls := []string{}
 
+	events := make([]abciTypes.Event, 0)
+	events = append(events, results.BeginBlockEvents...)
 	for _, result := range results.TxsResults {
-		for _, event := range result.Events {
-			rawSql := ""
-			switch event.Type {
-			case "greenfield.storage.EventCreateGroup":
-				rawSql, err = p.handleEventCreateGroup(blockHeight, event)
-				if err != nil {
-					util.Logger.Errorf("processor: %s, fail to handle EventCreateGroup err: %s", p.Name(), err)
-					return err
-				}
-				if rawSql != "" {
-					rawCreateSqls = append(rawCreateSqls, rawSql)
-				}
-			case "greenfield.storage.EventDeleteGroup":
-				rawSql, err = p.handleEventDeleteGroup(blockHeight, event)
-				if err != nil {
-					util.Logger.Errorf("processor: %s, fail to handle EventDeleteGroup err: %s", p.Name(), err)
-					return err
-				}
-				if rawSql != "" {
-					rawDeleteSqls = append(rawDeleteSqls, rawSql)
-				}
-			case "greenfield.storage.EventUpdateGroupExtra":
-				rawSql, err = p.handleEventUpdateGroupExtra(blockHeight, event)
-				if err != nil {
-					util.Logger.Errorf("processor: %s, fail to handle EventUpdateGroupExtra err: %s", p.Name(), err)
-					return err
-				}
-				if rawSql != "" {
-					rawUpdateSqls = append(rawUpdateSqls, rawSql)
-				}
-			case "greenfield.permission.EventPutPolicy":
-				rawSql, err = p.handleEventPutPolicy(blockHeight, event)
-				if err != nil {
-					util.Logger.Errorf("processor: %s, fail to handle EventPutPolicy err: %s", p.Name(), err)
-					return err
-				}
-				if rawSql != "" {
-					rawUpdateSqls = append(rawUpdateSqls, rawSql)
-				}
+		events = append(events, result.Events...)
+	}
+	events = append(events, results.EndBlockEvents...)
+
+	for _, event := range events {
+		rawSql := ""
+		switch event.Type {
+		case "greenfield.storage.EventCreateGroup":
+			rawSql, err = p.handleEventCreateGroup(blockHeight, event)
+			if err != nil {
+				util.Logger.Errorf("processor: %s, fail to handle EventCreateGroup err: %s", p.Name(), err)
+				return err
+			}
+			if rawSql != "" {
+				rawCreateSqls = append(rawCreateSqls, rawSql)
+			}
+		case "greenfield.storage.EventDeleteGroup":
+			rawSql, err = p.handleEventDeleteGroup(blockHeight, event)
+			if err != nil {
+				util.Logger.Errorf("processor: %s, fail to handle EventDeleteGroup err: %s", p.Name(), err)
+				return err
+			}
+			if rawSql != "" {
+				rawDeleteSqls = append(rawDeleteSqls, rawSql)
+			}
+		case "greenfield.storage.EventUpdateGroupExtra":
+			rawSql, err = p.handleEventUpdateGroupExtra(blockHeight, event)
+			if err != nil {
+				util.Logger.Errorf("processor: %s, fail to handle EventUpdateGroupExtra err: %s", p.Name(), err)
+				return err
+			}
+			if rawSql != "" {
+				rawUpdateSqls = append(rawUpdateSqls, rawSql)
+			}
+		case "greenfield.permission.EventPutPolicy":
+			rawSql, err = p.handleEventPutPolicy(blockHeight, event)
+			if err != nil {
+				util.Logger.Errorf("processor: %s, fail to handle EventPutPolicy err: %s", p.Name(), err)
+				return err
+			}
+			if rawSql != "" {
+				rawUpdateSqls = append(rawUpdateSqls, rawSql)
+			}
+		case "greenfield.storage.EventDeleteObject":
+			rawSqls, err := p.handleEventDeleteObject(blockHeight, event)
+			if err != nil {
+				util.Logger.Errorf("processor: %s, fail to handle EventDeleteObject err: %s", p.Name(), err)
+				return err
+			}
+			if rawSql != "" {
+				rawDeleteSqls = append(rawDeleteSqls, rawSqls...)
 			}
 		}
 	}
@@ -309,4 +323,31 @@ func (p *GnfdBlockProcessor) handleEventPutPolicy(blockHeight uint64, event abci
 
 	return fmt.Sprintf("update items set `type` = %d, resource_id = %d, updated_gnfd_height = %d where group_id = %d",
 		resourceType, putPolicy.ResourceId.Uint64(), blockHeight, groupId.Uint64()), nil
+}
+
+func (p *GnfdBlockProcessor) handleEventDeleteObject(blockHeight uint64, event abciTypes.Event) ([]string, error) {
+	sqls := make([]string, 0)
+	e, err := sdkTypes.ParseTypedEvent(event)
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to parse EventDeleteObject err: %s", p.Name(), err)
+		return sqls, err
+	}
+	deleteObject := e.(*storageTypes.EventDeleteObject)
+
+	objectId := deleteObject.ObjectId.Uint64()
+	item, err := p.itemDao.GetByObjectId(context.Background(), int64(objectId), true)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return sqls, err
+	}
+
+	rawSql1 := fmt.Sprintf("delete from item_stats where item_id = %d ", item.Id)
+	sqls = append(sqls, rawSql1)
+
+	rawSql2 := fmt.Sprintf("delete from purchases where item_id = %d ", item.Id)
+	sqls = append(sqls, rawSql2)
+
+	rawSql3 := fmt.Sprintf("delete from items where id = %d ", item.Id)
+	sqls = append(sqls, rawSql3)
+
+	return sqls, nil
 }
