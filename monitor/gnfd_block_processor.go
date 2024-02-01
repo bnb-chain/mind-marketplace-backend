@@ -137,9 +137,8 @@ func (p *GnfdBlockProcessor) Process(blockHeight uint64) error {
 				util.Logger.Errorf("processor: %s, fail to handle EventDeleteObject err: %s", p.Name(), err)
 				return err
 			}
-			if rawSql != "" {
-				rawDeleteSqls = append(rawDeleteSqls, rawSqls...)
-			}
+			rawDeleteSqls = append(rawDeleteSqls, rawSqls...)
+
 		}
 	}
 
@@ -336,8 +335,12 @@ func (p *GnfdBlockProcessor) handleEventDeleteObject(blockHeight uint64, event a
 
 	objectId := deleteObject.ObjectId.Uint64()
 	item, err := p.itemDao.GetByObjectId(context.Background(), int64(objectId), true)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return sqls, err
+	}
+
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return sqls, nil
 	}
 
 	rawSql1 := fmt.Sprintf("delete from item_stats where item_id = %d ", item.Id)
