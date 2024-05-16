@@ -28,6 +28,7 @@ type GnfdBlockProcessor struct {
 	blockDao     dao.GnfdBlockDao
 	categoryDao  dao.CategoryDao
 	itemDao      dao.ItemDao
+	listingDao   dao.ListingDao
 	db           *gorm.DB
 	metricServer *metric.MetricService
 
@@ -38,7 +39,7 @@ type GnfdBlockProcessor struct {
 }
 
 func NewGnfdBlockProcessor(client *GnfdCompositeClients,
-	blockDao dao.GnfdBlockDao, categoryDao dao.CategoryDao, itemDao dao.ItemDao, db *gorm.DB,
+	blockDao dao.GnfdBlockDao, categoryDao dao.CategoryDao, itemDao dao.ItemDao, listingDao dao.ListingDao, db *gorm.DB,
 	metricServer *metric.MetricService,
 	groupBucketRegex string,
 	groupBucketPrefix string,
@@ -49,6 +50,7 @@ func NewGnfdBlockProcessor(client *GnfdCompositeClients,
 		blockDao:          blockDao,
 		categoryDao:       categoryDao,
 		itemDao:           itemDao,
+		listingDao:        listingDao,
 		db:                db,
 		metricServer:      metricServer,
 		groupBucketRegex:  groupBucketRegex,
@@ -227,6 +229,19 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 	block, err := p.client.GetBlock(int64(blockHeight))
 	if err != nil {
 		util.Logger.Errorf("processor: %s, fail to get block err: %s", p.Name(), err)
+		return rawSql, err
+	}
+
+	listing, err := p.listingDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()))
+	if err == nil && listing.Id > 0 {
+		return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height, price)"+
+			" values (%d, %d, '%s', '%s', '%s', %d, '%s', '%s', %d, %d, %s)",
+			categoryId, createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
+			database.ItemListed, escape(extra.Desc), escape(extra.Url), block.Time.Unix(), blockHeight, listing.Price), nil
+	}
+
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to get listing err: %s", p.Name(), err)
 		return rawSql, err
 	}
 
