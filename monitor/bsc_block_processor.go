@@ -200,8 +200,12 @@ func (p *BscBlockProcessor) handleEventList(blockHeight uint64, l types.Log) (st
 	// item should be existed
 	_, err = p.itemDao.GetByGroupId(context.Background(), event.GroupId.Int64(), true)
 	if err != nil {
-		util.Logger.Errorf("processor: %s, fail to find item %d err: %s", p.Name(), event.GroupId.Int64(), err)
-		return "", err
+		util.Logger.Errorf("processor: %s, fail to find item %d err: %s, write to listing table", p.Name(), event.GroupId.Int64(), err)
+
+		// insert into a temp table: listing
+		rawSql := fmt.Sprintf("insert into listing (price, list_bsc_height, group_id) values (%s, %d, %d)",
+			event.Price, blockHeight, event.GroupId)
+		return rawSql, nil
 	}
 
 	// only list Objects, i.e., pictures

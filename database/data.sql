@@ -1,5 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS `data-marketplace` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+use data-marketplace;
 insert into categories(id, name) values (100, 'Uncategorized');
 insert into categories(id, name) values (1, 'AI Model');
 insert into categories(id, name) values (2, 'Code Resource');

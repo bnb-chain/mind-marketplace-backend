@@ -53,10 +53,11 @@ func main() {
 
 	categoryDao := dao.NewDbCategoryDao(db)
 	itemDao := dao.NewDbItemDao(db)
+	listingDao := dao.NewDbListingDao(db)
 
 	gnfdBlockDao := dao.NewDbGnfdBlockDao(db)
 	gnfdClient := monitor.NewGnfdCompositClients(config.GnfdRpcAddrs, config.GnfdChainId, false)
-	gnfdProcessor := monitor.NewGnfdBlockProcessor(gnfdClient, gnfdBlockDao, categoryDao, itemDao, db, metricServer,
+	gnfdProcessor := monitor.NewGnfdBlockProcessor(gnfdClient, gnfdBlockDao, categoryDao, itemDao, listingDao, db, metricServer,
 		config.GroupBucketRegex, config.GroupBucketPrefix, config.GroupObjectRegex, config.GroupObjectPrefix)
 	gnfdMonitor := monitor.NewMonitor(gnfdProcessor, config.GnfdStartHeight)
 

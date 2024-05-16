@@ -51,7 +51,7 @@ func configureAPI(api *operations.MindMarketplaceAPI) http.Handler {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		util.Logger.Fatal(http.ListenAndServe(":9292", nil))
+		util.Logger.Fatal(http.ListenAndServe(":9293", nil))
 	}()
 
 	api.JSONConsumer = runtime.JSONConsumer()
