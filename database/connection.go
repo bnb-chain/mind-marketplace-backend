@@ -58,6 +58,9 @@ func ConnectDBWithConfig(config *util.DBConfig) (*gorm.DB, error) {
 		if err = db.AutoMigrate(&GnfdBlock{}); err != nil {
 			panic(err)
 		}
+		if err = db.AutoMigrate(&Listing{}); err != nil {
+			panic(err)
+		}
 		return db.Debug(), nil
 	} else {
 		return nil, fmt.Errorf("dialect %s not supported", config.DBDialect)
