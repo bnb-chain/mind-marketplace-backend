@@ -30,7 +30,7 @@ func (dao *DbListingDao) Create(context context.Context, listing *database.Listi
 
 func (dao *DbListingDao) GetByGroupId(context context.Context, groupId int64) (database.Listing, error) {
 	var item = database.Listing{}
-	if err := dao.db.Preload("Stats").Where("group_id = ?", groupId).Take(&item).Error; err != nil {
+	if err := dao.db.Where("group_id = ?", groupId).Take(&item).Error; err != nil {
 		return item, err
 	}
 	return item, nil
