@@ -233,11 +233,16 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 	}
 
 	listing, err := p.listingDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()))
-	if err == nil {
+	if err == nil && listing.Id > 0 {
 		return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height, price)"+
 			" values (%d, %d, '%s', '%s', '%s', %d, '%s', '%s', %d, %d, %s)",
 			categoryId, createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
 			database.ItemListed, escape(extra.Desc), escape(extra.Url), block.Time.Unix(), blockHeight, listing.Price), nil
+	}
+
+	if err != nil {
+		util.Logger.Errorf("processor: %s, fail to get listing err: %s", p.Name(), err)
+		return rawSql, err
 	}
 
 	return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height)"+

@@ -29,9 +29,9 @@ func (dao *DbListingDao) Create(context context.Context, listing *database.Listi
 }
 
 func (dao *DbListingDao) GetByGroupId(context context.Context, groupId int64) (database.Listing, error) {
-	var item = database.Listing{}
-	if err := dao.db.Where("group_id = ?", groupId).Take(&item).Error; err != nil {
-		return item, err
+	var listing = database.Listing{}
+	if err := dao.db.Where("group_id = ?", groupId).Take(&listing).Error; err != nil {
+		return listing, err
 	}
-	return item, nil
+	return listing, nil
 }
