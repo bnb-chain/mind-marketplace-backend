@@ -234,10 +234,10 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 
 	listing, err := p.listingDao.GetByGroupId(context.Background(), int64(createGroup.GroupId.Uint64()))
 	if err == nil && listing.Id > 0 {
-		return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height, price)"+
-			" values (%d, %d, '%s', '%s', '%s', %d, '%s', '%s', %d, %d, %s)",
+		return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height, price, `type`)"+
+			" values (%d, %d, '%s', '%s', '%s', %d, '%s', '%s', %d, %d, %s, %d)",
 			categoryId, createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
-			database.ItemListed, escape(extra.Desc), escape(extra.Url), block.Time.Unix(), blockHeight, listing.Price), nil
+			database.ItemListed, escape(extra.Desc), escape(extra.Url), block.Time.Unix(), blockHeight, listing.Price, database.OBJECT), nil
 	}
 
 	if err != nil {
@@ -245,10 +245,10 @@ func (p *GnfdBlockProcessor) handleEventCreateGroup(blockHeight uint64, event ab
 		return rawSql, err
 	}
 
-	return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height)"+
-		" values (%d, %d, '%s', '%s', '%s', %d, '%s', '%s', %d, %d)",
+	return fmt.Sprintf("insert into items (category_id, group_id, group_name, name, owner_address, status, description, url, listed_at, created_gnfd_height, `type`)"+
+		" values (%d, %d, '%s', '%s', '%s', %d, '%s', '%s', %d, %d, %d)",
 		categoryId, createGroup.GroupId.Uint64(), createGroup.GroupName, resourceName, createGroup.Owner,
-		database.ItemPending, escape(extra.Desc), escape(extra.Url), block.Time.Unix(), blockHeight), nil
+		database.ItemPending, escape(extra.Desc), escape(extra.Url), block.Time.Unix(), blockHeight, database.OBJECT), nil
 }
 
 func (p *GnfdBlockProcessor) getCategoryId(extra *Extra) int64 {
