@@ -203,7 +203,7 @@ func (p *BscBlockProcessor) handleEventList(blockHeight uint64, l types.Log) (st
 		util.Logger.Errorf("processor: %s, fail to find item %d err: %s, write to listing table", p.Name(), event.GroupId.Int64(), err)
 
 		// insert into a temp table: listing
-		rawSql := fmt.Sprintf("insert into listing (price, list_bsc_height, group_id) values (%s, %d, %d)",
+		rawSql := fmt.Sprintf("insert into listings (price, list_bsc_height, group_id) values (%s, %d, %d)",
 			event.Price, blockHeight, event.GroupId)
 		return rawSql, nil
 	}
