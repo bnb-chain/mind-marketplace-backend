@@ -11,7 +11,7 @@ func validateAddress(address string) error {
 }
 
 func validateKeyword(keyword string) error {
-	if len(keyword) < 3 {
+	if len(keyword) < 1 {
 		return InvalidKeywordErr
 	}
 	return nil
